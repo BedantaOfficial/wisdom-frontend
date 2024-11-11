@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./index.css";
 import axios from "axios";
+import { getAuthToken } from "../../helpers/token";
 
 const monthNames = [
   "January",
@@ -22,6 +23,10 @@ const years = Array.from(
 );
 
 const Calendar = ({ setTotal, id }) => {
+  const token = getAuthToken();
+  if (!token) {
+    window.location.href = "https://wisdom.code-crafters.shop/";
+  }
   const [selectedMonth, setSelectedMonth] = useState();
   const [selectedYear, setSelectedYear] = useState();
   const [attendanceData, setAttendanceData] = useState({});
@@ -75,7 +80,12 @@ const Calendar = ({ setTotal, id }) => {
           import.meta.env.VITE_BASE_URL
         }/api/v1/attendance?student_id=${id}&month=${
           selectedMonth + 1
-        }&year=${selectedYear}`
+        }&year=${selectedYear}`,
+        {
+          headers: {
+            "X-Auth-Token": token,
+          },
+        }
       );
       if (response.status === 200) {
         const attendance = {};

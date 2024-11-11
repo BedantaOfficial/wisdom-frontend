@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAuthToken } from "../../helpers/token";
 
 function getRandomColor() {
   const r = Math.floor(200 + Math.random() * 55); // Red value between 200-255
@@ -10,8 +11,13 @@ function getRandomColor() {
 }
 
 function App() {
-  const [loading, setLoading] = useState(false);
+  const token = getAuthToken();
+  console.log(token);
+  if (!token) {
+    window.location.href = "https://wisdom.code-crafters.shop/";
+  }
 
+  const [loading, setLoading] = useState(false);
   const [userColors, setUserColors] = useState([]);
   const [users, setUsers] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -22,8 +28,14 @@ function App() {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/students`
+        `${import.meta.env.VITE_BASE_URL}/api/v1/students`,
+        {
+          headers: {
+            "X-Auth-Token": `${token}`,
+          },
+        }
       );
+      console.log(response);
       if (response.status === 200) {
         setUsers(response.data?.students || []);
         const colors = response.data?.students?.map(() => getRandomColor());

@@ -1,0 +1,50 @@
+#body {
+  background-color: #1a1a1a;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
+.container {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+.form-control {
+  background-color: #333;
+  color: white;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 16px;
+}
+.btn-primary {
+  border-radius: 20px;
+  font-size: 16px;
+  width: 100%;
+}
+.table-container {
+  margin-top: 20px;
+  max-height: 200px; /* Limit the height of the table content */
+  overflow-y: auto; /* Add vertical scrolling */
+}
+table {
+  width: 100%;
+}
+table th,
+table td {
+  background-color: #333;
+  border: 1px solid white;
+}
+.total-expense-row {
+  background-color: #333;
+  border-top: 2px solid white;
+  position: sticky;
+  bottom: 0;
+}
+.total-expense {
+  font-size: 1.2rem;
+  font-weight: bold;
+}

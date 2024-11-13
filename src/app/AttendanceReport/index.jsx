@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuthToken } from "../../helpers/token";
+import { CircularProgress } from "@mui/material";
 
 function getRandomColor() {
   const r = Math.floor(200 + Math.random() * 55); // Red value between 200-255
@@ -103,61 +104,70 @@ function App() {
         style={{
           maxWidth: "min(90vw, 800px)",
           margin: "0 auto",
+          minHeight: "500px",
           maxHeight: "75vh",
           overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
-        {filteredUsers().map((user, index) => (
-          <div
-            key={user.id}
-            onClick={() => navigate(`/attendanceReport/${user.id}`)}
-            style={{
-              backgroundColor: userColors[index],
-              padding: "10px",
-              borderRadius: "10px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "10px",
-              color: "black",
-              fontSize: "18px",
-            }}
-          >
-            <div>
-              <img
-                src={`${import.meta.env.VITE_FILE_URL}/${user.filename}`}
-                alt={user.name}
-                style={{
-                  width: 50,
-                  height: 50,
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  marginLeft: "10px",
-                }}
-              />
-              <span
-                style={{
-                  marginLeft: 10,
-                }}
-              >
-                {user.name}
-              </span>
+        {loading ? (
+          <CircularProgress />
+        ) : (
+          filteredUsers().map((user, index) => (
+            <div
+              key={user.id}
+              onClick={() => navigate(`/attendanceReport/${user.id}`)}
+              style={{
+                backgroundColor: userColors[index],
+                padding: "10px",
+                borderRadius: "10px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "10px",
+                color: "black",
+                fontSize: "18px",
+                width: "100%",
+              }}
+            >
+              <div>
+                <img
+                  src={`${import.meta.env.VITE_FILE_URL}/${user.filename}`}
+                  alt={user.name}
+                  style={{
+                    width: 50,
+                    height: 50,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    marginLeft: "10px",
+                  }}
+                />
+                <span
+                  style={{
+                    marginLeft: 10,
+                  }}
+                >
+                  {user.name}
+                </span>
+              </div>
+              <div>
+                <span style={{ fontSize: 12 }}>Payment</span>
+                <br />
+                <small
+                  style={{
+                    fontSize: 12,
+                    textTransform: "uppercase",
+                    color: user.late_fee === "success" ? "green" : "red",
+                  }}
+                >
+                  {user.late_fee}
+                </small>
+              </div>
             </div>
-            <div>
-              <span style={{ fontSize: 12 }}>Payment</span>
-              <br />
-              <small
-                style={{
-                  fontSize: 12,
-                  textTransform: "uppercase",
-                  color: user.late_fee === "success" ? "green" : "red",
-                }}
-              >
-                {user.late_fee}
-              </small>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

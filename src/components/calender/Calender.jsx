@@ -17,19 +17,14 @@ const monthNames = [
   "November",
   "December",
 ];
-const years = Array.from(
-  { length: 10 },
-  (_, i) => new Date().getFullYear() - 5 + i
-);
 
-const Calendar = ({ setTotal, id }) => {
+const Calendar = ({ setTotal, id, attendanceData, years }) => {
   const token = getAuthToken();
   if (!token) {
     window.location.href = "https://wisdom.code-crafters.shop/";
   }
   const [selectedMonth, setSelectedMonth] = useState();
   const [selectedYear, setSelectedYear] = useState();
-  const [attendanceData, setAttendanceData] = useState({});
 
   const firstDay = () => new Date(selectedYear, selectedMonth, 1).getDay();
   const daysInMonth = () =>
@@ -73,44 +68,6 @@ const Calendar = ({ setTotal, id }) => {
     return classList;
   };
 
-  const fetchAttendance = async () => {
-    try {
-      const response = await axios.get(
-        `${
-          import.meta.env.VITE_BASE_URL
-        }/api/v1/attendance?student_id=${id}&month=${
-          selectedMonth + 1
-        }&year=${selectedYear}`,
-        {
-          headers: {
-            "X-Auth-Token": token,
-          },
-        }
-      );
-      if (response.status === 200) {
-        const attendance = {};
-        let total = 0;
-        response.data?.attendance.forEach((item) => {
-          attendance[item.date] = item.status;
-          if (attendance[item.date] === "present") total++;
-        });
-        setTotal(total);
-        setAttendanceData(attendance);
-      }
-    } catch (error) {
-      alert(error?.response?.data?.message);
-      console.error("Error fetching attendance data:", error);
-      // Handle error properly (show error message to user, etc.)
-    }
-  };
-
-  useEffect(() => {
-    console.log(selectedMonth, selectedYear);
-    if (id && selectedMonth && selectedYear) {
-      fetchAttendance();
-    }
-  }, [selectedMonth, selectedYear, id]);
-
   useEffect(() => {
     setSelectedMonth(new Date().getMonth());
     setSelectedYear(new Date().getFullYear());
@@ -118,13 +75,23 @@ const Calendar = ({ setTotal, id }) => {
 
   const monthDays = () => {
     const days = [];
+    let total = 0;
+
     for (let day = 1; day <= daysInMonth(); day++) {
+      let dateKey = `${selectedYear}-${String(selectedMonth + 1).padStart(
+        2,
+        "0"
+      )}-${String(day).padStart(2, "0")}`;
+      if (attendanceData[dateKey] === "present") {
+        total++;
+      }
       days.push(
         <div key={day} className={getClassNamesForDay(day)}>
           {day}
         </div>
       );
     }
+    setTotal(total);
     return days;
   };
 
@@ -149,7 +116,7 @@ const Calendar = ({ setTotal, id }) => {
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
           >
-            {years.map((year) => (
+            {years?.map((year) => (
               <option value={year} key={year}>
                 {year}
               </option>

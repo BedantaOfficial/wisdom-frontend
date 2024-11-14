@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./index.css";
 import Calendar from "../../components/calender/Calender";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getAuthToken } from "../../helpers/token";
 import axios from "axios";
 import { CircularProgress } from "@mui/material";
@@ -13,6 +13,7 @@ const StudentAttendanceReport = () => {
   const [courseRange, setCourseRange] = useState(null);
   const [rangeLoading, setRangeLoading] = useState(false);
   const [years, setYears] = useState([]);
+  const navigate = useNavigate();
 
   const params = useParams();
   const id = params.id;
@@ -125,7 +126,7 @@ const StudentAttendanceReport = () => {
               Total Attendance:
             </span>
             <span id="total-attendance">{total}</span>
-            <Link
+            <span
               className="export-btn"
               style={{
                 marginLeft: "10px",
@@ -134,11 +135,16 @@ const StudentAttendanceReport = () => {
                 color: "#007bff",
                 textDecoration: "none",
               }}
-              to="/attendanceReport/excel"
-              state={{ courseRange, attendanceReport: attendanceData }}
+              // to="/attendanceReport/excel"
+              // state={{ courseRange, attendanceReport: attendanceData }}
+              onClick={() =>
+                navigate("/attendanceReport/excel", {
+                  state: { courseRange, attendanceReport: attendanceData },
+                })
+              }
             >
               Export ▾
-            </Link>
+            </span>
           </div>
         </>
       )}

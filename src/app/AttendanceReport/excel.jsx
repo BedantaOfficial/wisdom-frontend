@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import * as XLSX from "xlsx";
+import { utils, writeFile } from "xlsx";
 
 import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
@@ -64,10 +64,10 @@ const ExcelReport = () => {
 
   const exportTableToExcel = () => {
     const table = document.getElementById("report-table");
-    const workbook = XLSX.utils.table_to_book(table, {
+    const workbook = utils.table_to_book(table, {
       sheet: "Attendance Report",
     });
-    XLSX.writeFile(workbook, "Student_Attendance_Report.xlsx");
+    writeFile(workbook, "Student_Attendance_Report.xlsx");
   };
 
   // Function to export table to PDF
@@ -221,7 +221,7 @@ const ExcelReport = () => {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}
-        PaperProps={{
+        sx={{
           style: {
             width: "200px",
             position: "absolute",

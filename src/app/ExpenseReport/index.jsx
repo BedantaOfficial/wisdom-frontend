@@ -1,31 +1,78 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./index.css";
+import { getAuthToken } from "../../helpers/token";
+import axios from "axios";
+import { CircularProgress } from "@mui/material";
 
 const ExpenseReport = () => {
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [amount, setAmount] = useState("");
   const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const token = getAuthToken();
+
+  if (!token) {
+    window.location.href = import.meta.env.VITE_MAIN_URL;
+  }
+
+  const fetchExpenses = async () => {
+    setLoading(true);
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/api/v1/expenses`,
+      {
+        headers: {
+          "X-Auth-Token": token,
+        },
+      }
+    );
+    if (response.status === 200) {
+      setExpenses(response.data?.expenses?.reverse() || []);
+    }
+    try {
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isNaN(amount) || amount <= 0) {
-      alert("Please enter a valid amount.");
-      return;
-    }
-    setExpenses([
-      ...expenses,
+    setLoading(true);
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/api/v1/expenses`,
       {
         name,
         type,
         amount,
       },
-    ]);
-    setName("");
-    setType("");
-    setAmount("");
+      {
+        headers: {
+          "X-Auth-Token": token,
+        },
+      }
+    );
+    console.log(response);
+    if (response.status === 201) {
+      fetchExpenses();
+    }
+    try {
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+      setName("");
+      setType("");
+      setAmount("");
+    }
   };
+
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
 
   return (
     <div className="container">
@@ -69,9 +116,13 @@ const ExpenseReport = () => {
           />
           <small className="form-text text-muted">Enter a valid amount</small>
         </div>
-        <button type="submit" className="btn btn-primary">
-          Submit
-        </button>
+        {loading ? (
+          <CircularProgress />
+        ) : (
+          <button type="submit" className="btn btn-primary">
+            Add Expense
+          </button>
+        )}
       </form>
       <div className="table-container">
         <table className="table table-dark table-striped mt-4">
@@ -87,7 +138,7 @@ const ExpenseReport = () => {
               <tr key={index}>
                 <td>{expense.name}</td>
                 <td>{expense.type}</td>
-                <td>{expense.amount.toFixed(2)}</td>
+                <td>{expense.amount}</td>
               </tr>
             ))}
           </tbody>
@@ -96,7 +147,10 @@ const ExpenseReport = () => {
       <div className="total-expense-row text-right p-2">
         <span>Total Expense: </span>
         <span id="total-expense" className="total-expense">
-          ₹0.00
+          ₹
+          {expenses
+            .reduce((acc, expense) => acc + parseFloat(expense.amount), 0)
+            ?.toFixed(2)}
         </span>
       </div>
     </div>

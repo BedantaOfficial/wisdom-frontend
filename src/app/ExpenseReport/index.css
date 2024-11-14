@@ -48,3 +48,9 @@ table td {
   font-size: 1.2rem;
   font-weight: bold;
 }
+.form-control::placeholder {
+  color: white !important;
+}
+.form-text {
+  color: #968e8e !important;
+}

@@ -19,7 +19,7 @@ const StudentAttendanceReport = () => {
   const id = params.id;
   const token = getAuthToken();
   if (!token) {
-    window.location.href = "https://wisdom.code-crafters.shop/";
+    window.location.href = import.meta.env.VITE_MAIN_URL;
   }
 
   const fetchCourseRange = async () => {

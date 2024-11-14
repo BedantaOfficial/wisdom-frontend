@@ -15,7 +15,7 @@ function App() {
   const token = getAuthToken();
   console.log(token);
   if (!token) {
-    window.location.href = "https://wisdom.code-crafters.shop/";
+    window.location.href = import.meta.env.VITE_MAIN_URL;
   }
 
   const [loading, setLoading] = useState(false);

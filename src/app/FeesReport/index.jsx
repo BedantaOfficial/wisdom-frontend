@@ -11,7 +11,7 @@ import {
   Print,
   TextSnippet,
 } from "@mui/icons-material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const FeesReport = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -24,6 +24,7 @@ const FeesReport = () => {
   const [currentState, setCurrentState] = useState("loading");
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
+  const params = useParams();
   const location = useLocation();
 
   const token = getAuthToken(); // Get the token
@@ -68,21 +69,31 @@ const FeesReport = () => {
   };
 
   useEffect(() => {
-    const s = location.state?.s;
-    const e = location.state?.e;
-
+    const search = location?.search;
+    const params = {
+      s: null,
+      e: null,
+    };
+    if (search) {
+      const searchParams = new URLSearchParams(search);
+      params.s = searchParams.get("s");
+      params.e = searchParams.get("e");
+    }
+    const { s, e } = params;
     if (s || e) {
       setShowDatePicker(true);
       setStartDate(s);
       setEndDate(e);
-      fetchPaymentsByDateRange();
+      fetchPaymentsByDateRange(s, e);
     } else {
       fetchPayments();
     }
-  }, [location.state]);
+  }, [location, location.search]);
 
   // Function to fetch payments by date range
-  const fetchPaymentsByDateRange = async () => {
+  const fetchPaymentsByDateRange = async (s, e) => {
+    console.log(s, e);
+
     setPaymentsData([]);
     setCurrentState("loading");
 
@@ -96,7 +107,7 @@ const FeesReport = () => {
       const response = await axios.get(
         `${
           import.meta.env.VITE_BASE_URL
-        }/api/v1/payments?start_date=${startDate}&end_date=${endDate}`,
+        }/api/v1/payments?start_date=${s}&end_date=${e}`,
         {
           headers: {
             "X-Auth-Token": token,
@@ -174,8 +185,8 @@ const FeesReport = () => {
                 setShowDatePicker(false);
                 setStartDate("");
                 setEndDate("");
-                fetchPayments();
                 handleClose();
+                navigate("/feesReport");
               }}
             >
               Today
@@ -217,7 +228,9 @@ const FeesReport = () => {
           <div className="col mt-2">
             <button
               className="btn btn-primary"
-              onClick={fetchPaymentsByDateRange}
+              onClick={() =>
+                navigate(`/feesReport?s=${startDate}&e=${endDate}`)
+              }
             >
               Apply
             </button>
@@ -283,11 +296,7 @@ const FeesReport = () => {
                   fontSize="4"
                   onClick={() =>
                     navigate(`/feesReport/print`, {
-                      state: {
-                        ...payment,
-                        s: startDate,
-                        e: endDate,
-                      },
+                      state: payment,
                     })
                   }
                 />
@@ -295,11 +304,7 @@ const FeesReport = () => {
                   fontSize="4"
                   onClick={() =>
                     navigate(`/feesReport/${payment.user_id}`, {
-                      state: {
-                        ...payment,
-                        s: startDate,
-                        e: endDate,
-                      },
+                      state: payment,
                     })
                   }
                 />

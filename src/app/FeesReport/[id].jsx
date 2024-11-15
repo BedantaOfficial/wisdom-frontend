@@ -31,7 +31,7 @@ const LongPrint = () => {
     const content = componentRef.current;
 
     // Get dynamic width and height from the content's dimensions
-    const contentWidth = content.clientWidth;
+    const contentWidth = 400;
     const contentHeight = content.clientHeight + 5;
 
     // Convert width and height from pixels to inches for jsPDF
@@ -52,8 +52,21 @@ const LongPrint = () => {
       },
     };
 
-    // Generate and download the PDF
-    html2pdf().set(options).from(content).save();
+    // Generate PDF using html2pdf and open it in a new tab
+    html2pdf()
+      .set(options)
+      .from(content)
+      .toPdf()
+      .get("pdf")
+      .then((pdf) => {
+        const pdfUrl = pdf.output("bloburl");
+        const printWindow = window.open(pdfUrl, "_blank");
+
+        // After the PDF is loaded in the new window, trigger the print dialog
+        printWindow.onload = () => {
+          printWindow.print(); // Opens the print dialog
+        };
+      });
   };
 
   const params = useParams();
@@ -67,20 +80,6 @@ const LongPrint = () => {
   }
 
   const [payments, setPayments] = useState([]);
-
-  if (!payment || !id)
-    return (
-      <h1
-        style={{
-          textAlign: "center",
-          paddingTop: "20px",
-          fontSize: "24px",
-          fontWeight: "bold",
-        }}
-      >
-        404 not found
-      </h1>
-    );
 
   const fetchPayments = async () => {
     setLoading(true);
@@ -116,6 +115,20 @@ const LongPrint = () => {
     }
   }, [id]);
 
+  if (!payment || !id)
+    return (
+      <h1
+        style={{
+          textAlign: "center",
+          paddingTop: "20px",
+          fontSize: "24px",
+          fontWeight: "bold",
+        }}
+      >
+        404 not found
+      </h1>
+    );
+
   if (loading) {
     return (
       <div
@@ -135,9 +148,7 @@ const LongPrint = () => {
     <div style={{ position: "relative" }}>
       <div style={styles.body}>
         <IconButton
-          onClick={() =>
-            navigate("/feesReport", { state: { s: payment?.s, e: payment?.e } })
-          }
+          onClick={() => navigate(-1)}
           style={{
             position: "fixed",
             top: 16,
@@ -216,7 +227,12 @@ const LongPrint = () => {
                 <span>
                   {p.updated_at ? formatDate(p.updated_at) : "----------"}
                 </span>
-                <span>
+                <span
+                  style={{
+                    minWidth: "100px",
+                    textAlign: "right",
+                  }}
+                >
                   {p.amount} {p.status}
                 </span>
               </div>

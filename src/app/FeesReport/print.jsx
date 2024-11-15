@@ -34,15 +34,17 @@ const ShortPrint = () => {
     const imgWidth = 190; // PDF width in mm
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
-    pdf.save("payment_receipt.pdf");
+
+    // Auto open the print dialog after generating the PDF
+    pdf.autoPrint(); // Triggers the print dialog
+    const pdfUrl = pdf.output("bloburl");
+    window.open(pdfUrl, "_blank"); // Opens PDF and triggers print dialog in the browser
   };
 
   return (
     <div style={{ position: "relative" }}>
       <IconButton
-        onClick={() =>
-          navigate("/feesReport", { state: { s: payment?.s, e: payment?.e } })
-        }
+        onClick={() => navigate(-1)}
         style={{
           position: "fixed",
           top: 16,

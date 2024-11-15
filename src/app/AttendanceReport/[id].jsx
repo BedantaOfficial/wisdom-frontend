@@ -114,7 +114,14 @@ const StudentAttendanceReport = () => {
       >
         <ArrowBack />
       </IconButton>
-      <h3 className="text-center">Student Attendance Report</h3>
+      <h3
+        className="text-center"
+        style={{
+          marginTop: "30px",
+        }}
+      >
+        Student Attendance Report
+      </h3>
 
       {loading ? (
         <div

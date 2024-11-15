@@ -4,6 +4,10 @@ import { Link } from "react-router-dom";
 import { getAuthToken } from "../helpers/token";
 import { IconButton } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
+import feeImg from "../assets/images/fee.jpg";
+import certificateImg from "../assets/images/certificate.jpg";
+import expenseImg from "../assets/images/expense.jpg";
+import attendanceImg from "../assets/images/attendance.jpg";
 const Home = () => {
   const token = getAuthToken();
   if (!token) {
@@ -12,7 +16,11 @@ const Home = () => {
   return (
     <div id="root-body">
       <IconButton
-        onClick={() => (window.location.href = import.meta.env.VITE_MAIN_URL)}
+        onClick={() =>
+          (window.location.href = `${
+            import.meta.env.VITE_MAIN_URL
+          }/index.php/dashboard`)
+        }
         style={{
           position: "fixed",
           top: 16,
@@ -32,7 +40,7 @@ const Home = () => {
           className="icon-card"
           aria-label="Attendance Report Link"
         >
-          <img src="images/attendance_icon.png" alt />
+          <img src={attendanceImg} alt />
           <div className="icon-text">Attendance Report</div>
         </Link>
         {/* Link for Fee's Report */}
@@ -41,7 +49,7 @@ const Home = () => {
           className="icon-card"
           aria-label="Fee's Report Link"
         >
-          <img src="images/fees_icon.png" alt />
+          <img src={feeImg} alt />
           <div className="icon-text">Fee's Report</div>
         </Link>
         {/* Link for Expense Report */}
@@ -50,7 +58,7 @@ const Home = () => {
           className="icon-card"
           aria-label="Expense Report Link"
         >
-          <img src="images/expense_icon.png" alt />
+          <img src={expenseImg} alt />
           <div className="icon-text">Expense Report</div>
         </Link>
         {/* Link for Add Certificate */}
@@ -59,7 +67,7 @@ const Home = () => {
           className="icon-card"
           aria-label="Add Certificate Link"
         >
-          <img src="images/certificate_icon.png" alt />
+          <img src={certificateImg} alt />
           <div className="icon-text">Add Certificate</div>
         </Link>
       </div>

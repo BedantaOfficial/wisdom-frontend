@@ -1,10 +1,11 @@
 import React, { useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { printStyles as styles } from "../../helpers/styles";
 import IconButton from "@mui/material/IconButton";
 import PrintIcon from "@mui/icons-material/Print";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { ArrowBack } from "@mui/icons-material";
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -19,6 +20,7 @@ const ShortPrint = () => {
   const location = useLocation();
   const payment = location.state;
   const reportRef = useRef();
+  const navigate = useNavigate();
 
   if (!payment) return <h1>404 not found</h1>;
 
@@ -37,6 +39,20 @@ const ShortPrint = () => {
 
   return (
     <div style={{ position: "relative" }}>
+      <IconButton
+        onClick={() =>
+          navigate("/feesReport", { state: { s: payment?.s, e: payment?.e } })
+        }
+        style={{
+          position: "fixed",
+          top: 16,
+          left: 16,
+          backgroundColor: "#1976d2",
+          color: "#ffffff",
+        }}
+      >
+        <ArrowBack />
+      </IconButton>
       <div style={styles.body}>
         <div ref={reportRef} style={styles.container}>
           <div style={styles.header}>
@@ -63,10 +79,6 @@ const ShortPrint = () => {
               <span>Admission Date</span>
               <span>{formatDate(payment.date_of_admission)}</span>
             </div>
-            <div style={styles.detailsContent}>
-              <span>Admission Fees</span>
-              <span>{payment.admission_fees} paid</span>
-            </div>
           </div>
           <div style={styles.details}>
             <div
@@ -76,7 +88,7 @@ const ShortPrint = () => {
                 padding: "5px 5px",
               }}
             >
-              <span>{formatDate(payment.due_date)}</span>
+              <span>{formatDate(payment.updated_at)}</span>
               <span>{payment.amount}</span>
             </div>
             <div
@@ -89,12 +101,7 @@ const ShortPrint = () => {
               }}
             >
               <div>TOTAL</div>
-              <div>
-                {(
-                  parseFloat(payment.amount) +
-                  parseFloat(payment.admission_fees)
-                ).toFixed(2)}
-              </div>
+              <div>{parseFloat(payment.amount).toFixed(2)}</div>
             </div>
           </div>
           <div style={styles.thankyou}>

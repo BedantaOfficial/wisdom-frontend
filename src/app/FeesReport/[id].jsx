@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { printStyles as styles } from "../../helpers/styles";
 import IconButton from "@mui/material/IconButton";
 import PrintIcon from "@mui/icons-material/Print";
@@ -10,6 +10,7 @@ import axios from "axios";
 import { CircularProgress } from "@mui/material";
 import { useReactToPrint } from "react-to-print";
 import html2pdf from "html2pdf.js";
+import { ArrowBack } from "@mui/icons-material";
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -23,6 +24,7 @@ function formatDate(dateString) {
 const LongPrint = () => {
   const location = useLocation();
   const payment = location.state;
+  console.log(payment);
   const componentRef = useRef();
 
   const handlePrint = () => {
@@ -58,6 +60,7 @@ const LongPrint = () => {
   const id = params.id;
   const token = getAuthToken();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   if (!token) {
     window.location.href = import.meta.env.VITE_MAIN_URL;
@@ -95,7 +98,7 @@ const LongPrint = () => {
         const today = new Date();
         const fetchedPayments = response.data?.payments;
         const filteredPayments = fetchedPayments.filter((payment) => {
-          return new Date(payment.due_date) <= today;
+          return new Date(payment.updated_at) <= today;
         });
         setPayments(fetchedPayments);
       }
@@ -131,6 +134,20 @@ const LongPrint = () => {
   return (
     <div style={{ position: "relative" }}>
       <div style={styles.body}>
+        <IconButton
+          onClick={() =>
+            navigate("/feesReport", { state: { s: payment?.s, e: payment?.e } })
+          }
+          style={{
+            position: "fixed",
+            top: 16,
+            left: 16,
+            backgroundColor: "#1976d2",
+            color: "#ffffff",
+          }}
+        >
+          <ArrowBack />
+        </IconButton>
         <IconButton
           onClick={handlePrint}
           style={{
@@ -174,6 +191,19 @@ const LongPrint = () => {
             </div>
           </div>
           <div style={styles.details}>
+            <div
+              style={{
+                ...styles.detailsContent,
+                backgroundColor: "#dddddd",
+                borderBottom: "1px solid #ddd",
+                padding: "5px 5px",
+                fontWeight: "bold",
+              }}
+            >
+              <div>Due Date</div>
+              <div>Payment Date</div>
+              <div>Amount</div>
+            </div>
             {payments.map((p) => (
               <div
                 style={{
@@ -183,6 +213,9 @@ const LongPrint = () => {
                 }}
               >
                 <span>{formatDate(p.due_date)}</span>
+                <span>
+                  {p.updated_at ? formatDate(p.updated_at) : "----------"}
+                </span>
                 <span>
                   {p.amount} {p.status}
                 </span>

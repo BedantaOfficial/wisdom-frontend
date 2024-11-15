@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import "./index.css";
 import { getAuthToken } from "../../helpers/token";
 import axios from "axios";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, IconButton } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { ArrowBack } from "@mui/icons-material";
 
 const ExpenseReport = () => {
   const [name, setName] = useState("");
@@ -12,6 +14,7 @@ const ExpenseReport = () => {
   const [loading, setLoading] = useState(false);
 
   const token = getAuthToken();
+  const navigate = useNavigate();
 
   if (!token) {
     window.location.href = import.meta.env.VITE_MAIN_URL;
@@ -76,7 +79,19 @@ const ExpenseReport = () => {
 
   return (
     <div className="container">
-      <h2 className="mb-4">Expense Report</h2>
+      <IconButton
+        onClick={() => navigate("/")}
+        style={{
+          position: "fixed",
+          top: 16,
+          left: 16,
+          backgroundColor: "#1976d2",
+          color: "#ffffff",
+        }}
+      >
+        <ArrowBack />
+      </IconButton>
+      <h2 className="mb-4 mt-5">Expense Report</h2>
       <form id="expense-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <input

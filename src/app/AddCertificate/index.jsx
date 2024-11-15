@@ -2,7 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuthToken } from "../../helpers/token";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, IconButton } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
 
 function getRandomColor() {
   const r = Math.floor(200 + Math.random() * 55); // Red value between 200-255
@@ -69,12 +70,25 @@ function StudenList() {
         height: "100vh",
       }}
     >
+      <IconButton
+        onClick={() => navigate("/")}
+        style={{
+          position: "fixed",
+          top: 16,
+          left: 16,
+          backgroundColor: "#1976d2",
+          color: "#ffffff",
+        }}
+      >
+        <ArrowBack />
+      </IconButton>
       <h2
         style={{
           textAlign: "center",
           color: "#6a11cb",
           fontSize: "24px",
           fontWeight: "bold",
+          marginTop: 50,
         }}
       >
         WISDOM COMPUTER CENTRE

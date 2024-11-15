@@ -1,9 +1,28 @@
 import React from "react";
 import "./index.css";
 import { Link } from "react-router-dom";
+import { getAuthToken } from "../helpers/token";
+import { IconButton } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
 const Home = () => {
+  const token = getAuthToken();
+  if (!token) {
+    window.location.href = import.meta.env.VITE_MAIN_URL;
+  }
   return (
     <div id="root-body">
+      <IconButton
+        onClick={() => (window.location.href = import.meta.env.VITE_MAIN_URL)}
+        style={{
+          position: "fixed",
+          top: 16,
+          left: 16,
+          backgroundColor: "#1976d2",
+          color: "#ffffff",
+        }}
+      >
+        <ArrowBack />
+      </IconButton>
       <div className="header-title">Wisdom Computer Centre</div>
       <div className="header-subtitle">Smart Class</div>
       <div className="icon-grid">

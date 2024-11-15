@@ -4,8 +4,14 @@ import { CircularProgress, IconButton, Menu, MenuItem } from "@mui/material";
 import axios from "axios";
 import { getAuthToken } from "../../helpers/token";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Article, FileCopy, Print, TextSnippet } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import {
+  ArrowBack,
+  Article,
+  FileCopy,
+  Print,
+  TextSnippet,
+} from "@mui/icons-material";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const FeesReport = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -18,6 +24,7 @@ const FeesReport = () => {
   const [currentState, setCurrentState] = useState("loading");
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
   const token = getAuthToken(); // Get the token
   if (!token) {
@@ -31,10 +38,6 @@ const FeesReport = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  useEffect(() => {
-    fetchPayments();
-  }, []);
 
   const fetchPayments = async () => {
     setPaymentsData([]);
@@ -64,6 +67,20 @@ const FeesReport = () => {
     }
   };
 
+  useEffect(() => {
+    const s = location.state?.s;
+    const e = location.state?.e;
+
+    if (s || e) {
+      setShowDatePicker(true);
+      setStartDate(s);
+      setEndDate(e);
+      fetchPaymentsByDateRange();
+    } else {
+      fetchPayments();
+    }
+  }, [location.state]);
+
   // Function to fetch payments by date range
   const fetchPaymentsByDateRange = async () => {
     setPaymentsData([]);
@@ -74,12 +91,6 @@ const FeesReport = () => {
       setCurrentState(0);
       return;
     }
-
-    // if (!startDate || !endDate) {
-    //   alert("Please select both start and end dates.");
-    //   setCurrentState(0);
-    //   return;
-    // }
 
     try {
       const response = await axios.get(
@@ -116,7 +127,24 @@ const FeesReport = () => {
 
   return (
     <div className="container">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <IconButton
+        onClick={() => navigate("/")}
+        style={{
+          position: "fixed",
+          top: 16,
+          left: 16,
+          backgroundColor: "#1976d2",
+          color: "#ffffff",
+        }}
+      >
+        <ArrowBack />
+      </IconButton>
+      <div
+        className="d-flex justify-content-between align-items-center mb-4"
+        style={{
+          marginTop: 60,
+        }}
+      >
         <div className="header-title">Fee’s Collection Report</div>
         {/* Sorting Dropdown */}
         <div className="dropdown">
@@ -144,6 +172,8 @@ const FeesReport = () => {
               className="dropdown-item"
               onClick={() => {
                 setShowDatePicker(false);
+                setStartDate("");
+                setEndDate("");
                 fetchPayments();
                 handleClose();
               }}
@@ -233,7 +263,7 @@ const FeesReport = () => {
                 <div>
                   <strong>{payment.name}</strong>
                 </div>
-                <div>{new Date(payment.due_date).toLocaleDateString()}</div>
+                <div>{new Date(payment.updated_at).toLocaleDateString()}</div>
               </div>
               <div
                 style={{
@@ -244,14 +274,20 @@ const FeesReport = () => {
                 <VisibilityIcon
                   fontSize="4"
                   onClick={() =>
-                    (window.location.href = `https://wisdom.code-crafters.shop/index.php/feeinfo/${payment.user_id}`)
+                    (window.location.href = `${
+                      import.meta.env.VITE_MAIN_URL
+                    }/index.php/feeinfo/${payment.user_id}`)
                   }
                 />
                 <FileCopy
                   fontSize="4"
                   onClick={() =>
                     navigate(`/feesReport/print`, {
-                      state: payment,
+                      state: {
+                        ...payment,
+                        s: startDate,
+                        e: endDate,
+                      },
                     })
                   }
                 />
@@ -259,7 +295,11 @@ const FeesReport = () => {
                   fontSize="4"
                   onClick={() =>
                     navigate(`/feesReport/${payment.user_id}`, {
-                      state: payment,
+                      state: {
+                        ...payment,
+                        s: startDate,
+                        e: endDate,
+                      },
                     })
                   }
                 />

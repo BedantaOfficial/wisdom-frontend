@@ -4,7 +4,8 @@ import Calendar from "../../components/calender/Calender";
 import { useNavigate, useParams } from "react-router-dom";
 import { getAuthToken } from "../../helpers/token";
 import axios from "axios";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, IconButton } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
 
 const StudentAttendanceReport = () => {
   const [total, setTotal] = useState(0);
@@ -101,6 +102,18 @@ const StudentAttendanceReport = () => {
 
   return (
     <div id="attendance-body">
+      <IconButton
+        onClick={() => navigate("/attendanceReport")}
+        style={{
+          position: "fixed",
+          top: 16,
+          left: 16,
+          backgroundColor: "#1976d2",
+          color: "#ffffff",
+        }}
+      >
+        <ArrowBack />
+      </IconButton>
       <h3 className="text-center">Student Attendance Report</h3>
 
       {loading ? (

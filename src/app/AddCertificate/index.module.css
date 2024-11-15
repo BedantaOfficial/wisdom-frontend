@@ -1,0 +1,57 @@
+.certificate_body {
+  background-color: #2b2b2b;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+.main_container {
+  background-color: #2b2b2b;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.container {
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+}
+.btn_custom {
+  width: 100%;
+  border-radius: 25px;
+  margin-top: 15px;
+  color: black;
+  background-color: #ffffff;
+  font-weight: bold;
+}
+.btn_submit {
+  width: 100%;
+  border-radius: 25px;
+  margin-top: 30px;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+}
+.preview_container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.preview_img,
+.pdf_icon {
+  max-width: 100px;
+  max-height: 100px;
+  margin-top: 10px;
+  border: 1px solid #ffffff;
+  border-radius: 8px;
+}
+/* .pdf_icon {
+  display: none;
+} */

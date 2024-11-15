@@ -8,10 +8,6 @@ import { getAuthToken } from "./helpers/token";
   based on the file structure of the project.
 */
 function App() {
-  const token = getAuthToken();
-  if (!token) {
-    window.location.href = "https://wisdom.code-crafters.shop/";
-  }
   // Import page components dynamically using Vite's glob functionality.
   // This allows for easy routing based on the file structure.
   const pages = import.meta.glob(

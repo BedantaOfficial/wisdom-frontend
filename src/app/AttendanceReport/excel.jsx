@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { utils, writeFile } from "xlsx";
 
 import Tooltip from "@mui/material/Tooltip";
@@ -10,6 +10,7 @@ import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { Menu, MenuItem } from "@mui/material";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { ArrowBack } from "@mui/icons-material";
 const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const monthNames = [
   "January",
@@ -28,7 +29,7 @@ const monthNames = [
 
 const ExcelReport = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-
+  const navigate = useNavigate();
   // Open menu
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -87,6 +88,18 @@ const ExcelReport = () => {
       }}
       id="attendance-report"
     >
+      <IconButton
+        onClick={() => navigate(-1)}
+        style={{
+          position: "fixed",
+          top: 16,
+          left: 16,
+          backgroundColor: "#1976d2",
+          color: "#ffffff",
+        }}
+      >
+        <ArrowBack />
+      </IconButton>
       <table id="report-table">
         <thead style={{ border: "1px solid white" }}>
           <tr>

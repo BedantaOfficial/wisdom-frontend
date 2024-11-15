@@ -9,7 +9,7 @@ export const printStyles = {
     backgroundColor: "#f7f7f7",
   },
   container: {
-    width: "min(100vh, 300px)",
+    width: "min(100vh, 400px)",
     backgroundColor: "#fff",
     padding: "20px",
     border: "1px solid #ddd",

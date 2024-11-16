@@ -30,6 +30,13 @@ const LongPrint = () => {
   const handlePrint = () => {
     const content = componentRef.current;
 
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({ type: "HTML", content: content.innerHTML })
+      );
+      return;
+    }
+
     // Get dynamic width and height from the content's dimensions
     const contentWidth = 400;
     const contentHeight = content.clientHeight + 5;

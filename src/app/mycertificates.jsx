@@ -1,11 +1,15 @@
 import { ArrowBack } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
+import { makeBlob, mimicDownload } from "@samvera/image-downloader";
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import html2pdf from "html2pdf.js";
+import React, { useState, useEffect, useRef } from "react";
 
 const MyCertificate = () => {
   const [certificate, setCertificate] = useState(null);
   const [marksheet, setMarksheet] = useState(null);
+  const certificateRef = useRef(null);
+  const marksheetRef = useRef(null);
 
   // Get the `id` parameter from the URL
   const urlParams = new URLSearchParams(window.location.search);
@@ -34,12 +38,26 @@ const MyCertificate = () => {
     }
   };
 
-  // Function to handle downloading the file
-  const handleDownload = (fileUrl, fileName) => {
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = fileName;
-    link.click();
+  // Function to handle PDF download
+  const handleDownload = async (fileId) => {
+    const element =
+      fileId === "certificate" ? certificateRef.current : marksheetRef.current;
+
+    console.log(element);
+    if (!element) return;
+    const url = element.src;
+    console.log(url);
+    let response = await makeBlob(url);
+
+    // Handle any errors
+    if (!response || response.error) {
+      // Customize this for your app
+      alert("Error fetching the image");
+
+      return;
+    }
+
+    mimicDownload(response, fileId);
   };
 
   return (
@@ -63,10 +81,16 @@ const MyCertificate = () => {
         <h3>Certificate</h3>
         {certificate ? (
           <div style={styles.imageContainer}>
-            <img src={certificate} alt="Certificate" style={styles.image} />
+            <img
+              src={certificate}
+              alt="Certificate"
+              style={styles.image}
+              id="certificate"
+              ref={certificateRef} // Store the reference to the HTML element for future use
+            />
             <button
               style={styles.button}
-              onClick={() => handleDownload(certificate, "certificate.jpg")}
+              onClick={() => handleDownload("certificate")}
             >
               Download Certificate
             </button>
@@ -81,10 +105,16 @@ const MyCertificate = () => {
         <h3>Marksheet</h3>
         {marksheet ? (
           <div style={styles.imageContainer}>
-            <img src={marksheet} alt="Marksheet" style={styles.image} />
+            <img
+              src={marksheet}
+              alt="Marksheet"
+              style={styles.image}
+              id="marksheet"
+              ref={marksheetRef} // Store the reference to the HTML element for future use
+            />
             <button
               style={styles.button}
-              onClick={() => handleDownload(marksheet, "marksheet.jpg")}
+              onClick={() => handleDownload("marksheet")}
             >
               Download Marksheet
             </button>

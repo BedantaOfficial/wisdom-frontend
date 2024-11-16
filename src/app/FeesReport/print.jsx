@@ -26,19 +26,26 @@ const ShortPrint = () => {
 
   const handlePrint = async () => {
     const reportElement = reportRef.current;
+    if (window.ReactNativeWebView) {
+      const content = reportElement.innerHTML;
 
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({ type: "HTML", content })
+      );
+      return;
+    }
     const canvas = await html2canvas(reportElement, { scale: 2 });
     const imgData = canvas.toDataURL("image/png");
 
     const pdf = new jsPDF("p", "mm", "a4");
-    const imgWidth = 190; // PDF width in mm
+    const imgWidth = 190;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
 
-    // Auto open the print dialog after generating the PDF
-    pdf.autoPrint(); // Triggers the print dialog
+    pdf.autoPrint();
+
     const pdfUrl = pdf.output("bloburl");
-    window.open(pdfUrl, "_blank"); // Opens PDF and triggers print dialog in the browser
+    window.open(pdfUrl, "_blank");
   };
 
   return (

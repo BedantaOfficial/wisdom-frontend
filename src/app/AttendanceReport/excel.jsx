@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { utils, writeFile } from "xlsx";
+import { utils, write, writeFile } from "xlsx";
 
 import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
@@ -65,9 +65,18 @@ const ExcelReport = () => {
 
   const exportTableToExcel = () => {
     const table = document.getElementById("report-table");
+
     const workbook = utils.table_to_book(table, {
       sheet: "Attendance Report",
     });
+    if (window.ReactNativeWebView) {
+      const base64 = write(workbook, { type: "base64" });
+
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({ type: "TABLE_EXCEL", content: base64 })
+      );
+      return;
+    }
     writeFile(workbook, "Student_Attendance_Report.xlsx");
   };
 
@@ -76,6 +85,14 @@ const ExcelReport = () => {
     const doc = new jsPDF();
     const table = document.getElementById("report-table");
     doc.autoTable({ html: table });
+    // Send the base64 PDF to React Native
+    if (window.ReactNativeWebView) {
+      const pdfBase64 = doc.output("datauristring");
+
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({ type: "TABLE_PDF", content: pdfBase64 })
+      );
+    }
     doc.save("Student_Attendance_Report.pdf");
   }
 

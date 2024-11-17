@@ -27,10 +27,8 @@ const ShortPrint = () => {
   const handlePrint = async () => {
     const reportElement = reportRef.current;
     if (window.ReactNativeWebView) {
-      const content = reportElement.innerHTML;
-
       window.ReactNativeWebView.postMessage(
-        JSON.stringify({ type: "HTML", content })
+        JSON.stringify({ type: "HTML", content: reportElement.innerHTML })
       );
       return;
     }

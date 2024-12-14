@@ -1,6 +1,7 @@
 import { BrowserRouter } from "react-router-dom";
 import Routes from "./Routes";
-import { getAuthToken } from "./helpers/token";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 /*
   App component: The main entry point of the application.
@@ -23,10 +24,18 @@ function App() {
       eager: true, // Load modules eagerly (import them immediately)
     }
   );
-  // console.log(pages);
-  // console.log(layouts);
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       {/* Wrap the Routes component with BrowserRouter for routing functionality */}
       <BrowserRouter>
         <Routes pages={pages} layouts={layouts} />

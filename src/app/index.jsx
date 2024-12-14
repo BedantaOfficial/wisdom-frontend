@@ -54,12 +54,12 @@ const Home = () => {
         </Link>
         {/* Link for Expense Report */}
         <Link
-          to="expenseReport"
+          to="manageExam"
           className="icon-card"
           aria-label="Expense Report Link"
         >
           <img src={expenseImg} alt />
-          <div className="icon-text">Expense Report</div>
+          <div className="icon-text">Exam Report</div>
         </Link>
         {/* Link for Add Certificate */}
         <Link

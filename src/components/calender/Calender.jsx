@@ -102,6 +102,7 @@ const Calendar = ({ setTotal, id, attendanceData, years }) => {
         <div>
           <select
             id="month-select"
+            className="bg-[#4b0082] p-2 border border-white rounded-md m-2"
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
           >
@@ -113,6 +114,7 @@ const Calendar = ({ setTotal, id, attendanceData, years }) => {
           </select>
           <select
             id="year-select"
+            className="bg-[#4b0082] p-2 border border-white rounded-md m-2"
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
           >

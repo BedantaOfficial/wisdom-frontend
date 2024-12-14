@@ -19,7 +19,7 @@ export const printStyles = {
     color: "#000000",
   },
   headerContent: {
-    lineHeight: 0.5,
+    // lineHeight: 0.5,
     fontWeight: "bold",
     fontSize: ".9em",
     textAlign: "center",

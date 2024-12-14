@@ -103,6 +103,7 @@ function App() {
       >
         <input
           type="text"
+          className="text-black border border-black focus:border-gray-700"
           placeholder="Search here"
           style={{
             padding: "10px",

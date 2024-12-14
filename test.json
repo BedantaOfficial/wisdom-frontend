@@ -1,0 +1,112 @@
+{
+  "examination": {
+    "id": 2,
+    "course_id": 1,
+    "semester": 1,
+    "created_at": "2024-12-14T19:35:16.000000Z",
+    "updated_at": "2024-12-14T19:35:16.000000Z",
+    "exam_date": "2024-12-15",
+    "mcq": 1,
+    "theory": 1,
+    "practical": 1,
+    "theory_question_id": 16,
+    "mcq_question_id": 18,
+    "practical_question_id": 17,
+    "theory_total_marks": null,
+    "mcq_total_marks": null,
+    "practical_total_marks": null,
+    "time_in_seconds": 9000,
+    "theory_question": {
+      "id": 16,
+      "created_at": "2024-12-14T19:35:16.000000Z",
+      "updated_at": "2024-12-14T19:35:16.000000Z",
+      "type": "theory",
+      "question_details": [
+        {
+          "id": 16,
+          "created_at": "2024-12-14T19:35:16.000000Z",
+          "updated_at": "2024-12-14T19:35:16.000000Z",
+          "question": "hello",
+          "question_id": 16
+        }
+      ]
+    },
+    "practical_question": {
+      "id": 17,
+      "created_at": "2024-12-14T19:35:16.000000Z",
+      "updated_at": "2024-12-14T19:35:16.000000Z",
+      "type": "practical",
+      "question_details": [
+        {
+          "id": 17,
+          "created_at": "2024-12-14T19:35:16.000000Z",
+          "updated_at": "2024-12-14T19:35:16.000000Z",
+          "question": "hola",
+          "question_id": 17
+        }
+      ]
+    },
+    "mcq_question": {
+      "id": 18,
+      "created_at": "2024-12-14T19:35:16.000000Z",
+      "updated_at": "2024-12-14T19:35:16.000000Z",
+      "type": "mcq",
+      "question_details": [
+        {
+          "id": 18,
+          "created_at": "2024-12-14T19:35:16.000000Z",
+          "updated_at": "2024-12-14T19:35:16.000000Z",
+          "question": "hi",
+          "question_id": 18,
+          "options": [
+            {
+              "id": 11,
+              "created_at": "2024-12-14T19:35:16.000000Z",
+              "updated_at": "2024-12-14T19:35:16.000000Z",
+              "option": "hey",
+              "question_details_id": 18
+            },
+            {
+              "id": 12,
+              "created_at": "2024-12-14T19:35:16.000000Z",
+              "updated_at": "2024-12-14T19:35:16.000000Z",
+              "option": "namaste",
+              "question_details_id": 18
+            }
+          ]
+        }
+      ]
+    },
+    "course": {
+      "id": 1,
+      "name": "DCA",
+      "created_at": "2024-12-11T07:28:00.000000Z",
+      "updated_at": "2024-12-11T07:28:00.000000Z"
+    },
+    "students": [
+      {
+        "id": 96,
+        "filename": "implementation.png",
+        "name": "Raheem Ali",
+        "course": "ADCA",
+        "date_of_admission": "2023-02-14",
+        "guardian_name": "me",
+        "guardian_phone": 3314132767,
+        "mobile_no": 3274651862,
+        "email": "developerraheemali@gmail.com",
+        "enrollment_no": "lkdha",
+        "reference": "9230092",
+        "address": "Lahore",
+        "admission_fees": "239.00",
+        "created_at": "2024-09-03T21:13:12.000000Z",
+        "duration": "12month",
+        "paid_total": "1309318572",
+        "status": "active",
+        "password": "fVw4Ub9O8K",
+        "fee_status": "pending",
+        "late_fee": "success",
+        "pivot": { "examination_id": 2, "student_id": 96 }
+      }
+    ]
+  }
+}

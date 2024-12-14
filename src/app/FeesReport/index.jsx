@@ -137,25 +137,17 @@ const FeesReport = () => {
     );
 
   return (
-    <div className="container">
+    <div className="p-[16px] bg-[#000] min-h-full overflow-y-auto">
       <IconButton
         onClick={() => navigate("/")}
         style={{
-          position: "fixed",
-          top: 16,
-          left: 16,
           backgroundColor: "#1976d2",
           color: "#ffffff",
         }}
       >
         <ArrowBack />
       </IconButton>
-      <div
-        className="d-flex justify-content-between align-items-center mb-4"
-        style={{
-          marginTop: 60,
-        }}
-      >
+      <div className="d-flex justify-content-between align-items-center mb-4">
         <div className="header-title">Fee’s Collection Report</div>
         {/* Sorting Dropdown */}
         <div className="dropdown">

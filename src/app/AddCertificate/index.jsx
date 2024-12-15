@@ -102,6 +102,7 @@ function StudenList() {
       >
         <input
           type="text"
+          className="text-black"
           placeholder="Search here"
           style={{
             padding: "10px",

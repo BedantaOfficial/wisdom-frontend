@@ -75,9 +75,15 @@ const AddCertificate = () => {
       },
       body: formData,
     });
+
+    console.log(response);
+
     if (response.status === 200) {
       const data = await response.json();
-      console.log("data", data);
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
       handleClear();
       alert("Uploaded successfully");
     } else {
@@ -90,12 +96,18 @@ const AddCertificate = () => {
   const fetchCertificates = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/certificates?student_id=${id}`
+        `${
+          import.meta.env.VITE_BASE_URL
+        }/api/pubilc/certificates?student_id=${id}`
       );
       console.log(response);
       if (response.status === 200) {
-        setCertificateSrc(response.data?.certificates);
-        setMarksheetSrc(response.data?.marksheet);
+        setCertificateSrc(
+          import.meta.env.VITE_PUBLIC_URL + response.data?.certificates
+        );
+        setMarksheetSrc(
+          import.meta.env.VITE_PUBLIC_URL + response.data?.marksheet
+        );
       }
     } catch (error) {
       console.error("Error fetching certificates:", error);

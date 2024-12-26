@@ -4,7 +4,7 @@ import { toAlphabet } from "../../helpers/number";
 const McqQuestions = forwardRef(
   ({ questions, selectedAnswers, handleAnswerChange }, ref) => {
     return (
-      <div className="space-y-6" id="mcq-section" ref={ref}>
+      <div className="space-y-6 mb-32 md:mb-2" id="mcq-section" ref={ref}>
         {questions.map((question, index) => (
           <div key={question.id} className="border-b-2 border-gray-200 pb-6">
             <p className="font-semibold text-lg text-gray-800">

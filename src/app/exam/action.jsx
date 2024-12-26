@@ -9,6 +9,7 @@ import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CircularProgress } from "@mui/material";
+import moment from "moment";
 
 const Action = () => {
   const [loading, setLoading] = useState(false);
@@ -21,9 +22,8 @@ const Action = () => {
   });
 
   const [theoryAnswers, setTheoryAnswers] = useState(() => {
-    //   const storedAnswers = localStorage.getItem('Theory_answers');
-    //   return storedAnswers ? JSON.parse(storedAnswers) : {};
-    return {};
+    const storedAnswers = localStorage.getItem("Theory_answers");
+    return storedAnswers ? JSON.parse(storedAnswers) : {};
   });
 
   const [practicalAnswers, setPracticalAnswers] = useState(() => {
@@ -40,11 +40,6 @@ const Action = () => {
 
   const navigate = useNavigate();
 
-  // Refs for each section
-  const mcqRef = useRef(null);
-  const theoryRef = useRef(null);
-  const practicalRef = useRef(null);
-
   const fetchExamData = async () => {
     setLoading(true);
     try {
@@ -54,10 +49,23 @@ const Action = () => {
           params: { studentId, examId },
         }
       );
+      //   console.log(response);
+
       const details = response.data.examDetails;
+
+      if (!details || !details.examination) {
+        navigate("/exam/");
+        return;
+      }
+      if (!moment(details.examination?.exam_date).isSame(moment(), "day")) {
+        toast.error("The exam date has passed");
+        navigate("/exam/");
+        return;
+      }
       if (details.submitted) {
         toast.warning("You have already submitted the exam");
         navigate("/exam/");
+        return;
       }
       setExamData(details);
       // Extract sections based on MCQ, Theory, and Practical
@@ -82,9 +90,12 @@ const Action = () => {
         setTimeLeft(initialTimeLeft > 0 ? initialTimeLeft : 0); // Ensure time left is non-negative
       } else {
         navigate("/exam/start");
+        return;
       }
     } catch (error) {
-      console.error("Error fetching exam data", error);
+      toast.error("Error fetching exam data", error);
+      navigate("/exam/");
+      return;
     } finally {
       setLoading(false);
     }
@@ -121,7 +132,7 @@ const Action = () => {
       };
 
       // Store answers in localStorage for persistence
-      if (selectedSection === "MCQ")
+      if (selectedSection === "MCQ" || selectedSection === "Theory")
         localStorage.setItem(`MCQ_answers`, JSON.stringify(newAnswers));
 
       return newAnswers;
@@ -150,202 +161,171 @@ const Action = () => {
 
   const generatePDF = async () => {
     const doc = new jsPDF();
+    const margin = 10; // Margin for the content
+    const pageHeight = doc.internal.pageSize.height;
+
     try {
       if (!examData) return;
 
       const { examination } = examData;
 
-      // Title for the PDF
-      //   doc.setFontSize(18);
-      //   doc.text("Exam Answer Sheet", 10, 10);
-      //   doc.setFontSize(12);
-      let yPosition = 20;
+      let yPosition = margin;
+
+      const addPageIfNeeded = () => {
+        const remainingSpace = pageHeight - yPosition - margin;
+        if (remainingSpace < 50) {
+          // Add a condition to check for remaining space (adjust 50 as needed)
+          doc.addPage();
+          yPosition = margin; // Reset yPosition for the new page
+        }
+      };
+
+      const calculateImageSize = (image, yPosition) => {
+        const maxWidth = doc.internal.pageSize.width - 20; // 10px margin on each side
+        const remainingHeight = pageHeight - yPosition - margin; // Allow space for content
+
+        // Calculate aspect ratio and scale image accordingly
+        const scaleFactor = Math.min(
+          maxWidth / image.width,
+          remainingHeight / image.height
+        );
+
+        const scaledWidth = image.width * scaleFactor;
+        const scaledHeight = image.height * scaleFactor;
+
+        return { scaledWidth, scaledHeight };
+      };
 
       // MCQ Section
-      //   doc.addPage(); // Start a new page for the MCQ section
-      const mcqSectionTitle = "MCQ Section";
-      doc.setFontSize(16);
-      const mcqTitleWidth =
-        doc.getStringUnitWidth(mcqSectionTitle) * doc.internal.scaleFactor;
-      doc.text(
-        mcqSectionTitle,
-        (doc.internal.pageSize.width - mcqTitleWidth) / 2,
-        yPosition
-      ); // Center the title
-      yPosition += 10;
+      if (examination.mcq) {
+        const mcqSectionTitle = "MCQ Section";
+        doc.setFontSize(16);
+        const mcqTitleWidth =
+          doc.getStringUnitWidth(mcqSectionTitle) * doc.internal.scaleFactor;
+        doc.text(
+          mcqSectionTitle,
+          (doc.internal.pageSize.width - mcqTitleWidth) / 2,
+          yPosition
+        ); // Center the title
+        yPosition += 10;
 
-      examination.mcq_question.question_details.forEach((question, index) => {
-        const answer = mcqAnswers[question.id];
-        doc.setFontSize(12);
-        doc.text(`${index + 1}. ${question.question}`, 10, yPosition);
-        yPosition += 6;
-        doc.text(`Answer: ${answer || "No answer"}`, 10, yPosition);
-        yPosition += 12;
-      });
+        examination.mcq_question.question_details.forEach((question, index) => {
+          const answer = mcqAnswers[question.id];
+          doc.setFontSize(12);
+          doc.text(`${index + 1}. ${question.question}`, 10, yPosition);
+          yPosition += 6;
+          addPageIfNeeded();
+          doc.text(`Answer: ${answer || "No answer"}`, 10, yPosition);
+          yPosition += 12;
+          addPageIfNeeded();
+        });
+        doc.addPage();
+      }
 
       // Theory Section
-      doc.addPage(); // Start a new page for the Theory section
-      yPosition = 20;
-      const theorySectionTitle = "Theory Section";
-      doc.setFontSize(16);
-      const theoryTitleWidth =
-        doc.getStringUnitWidth(theorySectionTitle) * doc.internal.scaleFactor;
-      doc.text(
-        theorySectionTitle,
-        (doc.internal.pageSize.width - theoryTitleWidth) / 2,
-        yPosition
-      ); // Center the title
-      yPosition += 10;
+      if (examination.theory) {
+        yPosition = margin;
+        const theorySectionTitle = "Theory Section";
+        doc.setFontSize(16);
+        const theoryTitleWidth =
+          doc.getStringUnitWidth(theorySectionTitle) * doc.internal.scaleFactor;
+        doc.text(
+          theorySectionTitle,
+          (doc.internal.pageSize.width - theoryTitleWidth) / 2,
+          yPosition
+        ); // Center the title
+        yPosition += 10;
 
-      for (const [
-        index,
-        question,
-      ] of examination.theory_question.question_details.entries()) {
-        const answer = theoryAnswers[question.id];
-
-        doc.setFontSize(12);
-        doc.text(`${index + 1}. ${question.question}`, 10, yPosition);
-        yPosition += 6;
-
-        if (answer) {
-          // If answer is a File object (image)
-          if (answer instanceof File) {
-            const base64Image = await fileToBase64(answer);
-            if (base64Image) {
-              const image = new Image();
-              image.src = `data:image/jpeg;base64,${base64Image}`; // Create image from base64
-
-              // Wait for the image to load
-              await new Promise((resolve, reject) => {
-                image.onload = resolve;
-                image.onerror = reject;
-              });
-
-              // Get the original image size
-              const imgWidth = image.naturalWidth;
-              const imgHeight = image.naturalHeight;
-
-              // Calculate the maximum width and height based on available page space
-              const maxWidth = doc.internal.pageSize.width - 20; // 10px margin on each side
-              const maxHeight = doc.internal.pageSize.height - yPosition - 10; // Allow some space for other content
-
-              // Calculate aspect ratio and resize image accordingly
-              let scaleFactor = Math.min(
-                maxWidth / imgWidth,
-                maxHeight / imgHeight
-              );
-
-              // Apply the scale factor to both width and height
-              const scaledWidth = imgWidth * scaleFactor;
-              const scaledHeight = imgHeight * scaleFactor;
-
-              // Insert the image in the PDF while maintaining the original aspect ratio
-              doc.text("Answer:", 10, yPosition); // Optional text for answer
-              yPosition += 6;
-              doc.addImage(
-                image,
-                "JPEG",
-                10,
-                yPosition,
-                scaledWidth,
-                scaledHeight
-              ); // Insert scaled image
-              yPosition += scaledHeight + 6; // Adjust y-position after image
-            }
-          } else {
-            doc.text("Answer: File Uploaded", 10, yPosition); // For non-image files
+        examination.theory_question.question_details.forEach(
+          (question, index) => {
+            const answer = theoryAnswers[question.id];
+            doc.setFontSize(12);
+            doc.text(`${index + 1}. ${question.question}`, 10, yPosition);
+            yPosition += 6;
+            addPageIfNeeded();
+            doc.text(`Answer: ${answer || "No answer"}`, 10, yPosition);
             yPosition += 12;
+            addPageIfNeeded();
           }
-        } else {
-          doc.text("Answer: No answer", 10, yPosition);
-          yPosition += 12;
-        }
+        );
+        doc.addPage();
       }
 
       // Practical Section
-      doc.addPage(); // Start a new page for the Practical section
-      yPosition = 20;
-      const practicalSectionTitle = "Practical Section";
-      doc.setFontSize(16);
-      const practicalTitleWidth =
-        doc.getStringUnitWidth(practicalSectionTitle) *
-        doc.internal.scaleFactor;
-      doc.text(
-        practicalSectionTitle,
-        (doc.internal.pageSize.width - practicalTitleWidth) / 2,
-        yPosition
-      ); // Center the title
-      yPosition += 10;
+      if (examination.practical) {
+        yPosition = margin;
+        const practicalSectionTitle = "Practical Section";
+        doc.setFontSize(16);
+        const practicalTitleWidth =
+          doc.getStringUnitWidth(practicalSectionTitle) *
+          doc.internal.scaleFactor;
+        doc.text(
+          practicalSectionTitle,
+          (doc.internal.pageSize.width - practicalTitleWidth) / 2,
+          yPosition
+        ); // Center the title
+        yPosition += 10;
 
-      for (const [
-        index,
-        question,
-      ] of examination.practical_question.question_details.entries()) {
-        const answer = practicalAnswers[question.id];
+        let index = 0;
+        for (const question of examination.practical_question
+          .question_details) {
+          index++;
+          const answer = practicalAnswers[question.id];
 
-        doc.setFontSize(12);
-        doc.text(`${index + 1}. ${question.question}`, 10, yPosition);
-        yPosition += 6;
+          console.log(question, answer);
 
-        if (answer) {
-          // If answer is a File object (image)
-          if (answer instanceof File) {
-            const base64Image = await fileToBase64(answer);
-            if (base64Image) {
-              const image = new Image();
-              image.src = `data:image/jpeg;base64,${base64Image}`; // Create image from base64
+          doc.setFontSize(12);
+          doc.text(`${index + 1}. ${question.question}`, 10, yPosition);
+          yPosition += 6;
+          addPageIfNeeded(); // Check if we need to add a new page before placing content
 
-              // Wait for the image to load
-              await new Promise((resolve, reject) => {
-                image.onload = resolve;
-                image.onerror = reject;
-              });
+          if (answer) {
+            if (answer instanceof File) {
+              const base64Image = await fileToBase64(answer);
+              if (base64Image) {
+                const image = new Image();
+                image.src = `data:image/jpeg;base64,${base64Image}`;
 
-              // Get the original image size
-              const imgWidth = image.naturalWidth;
-              const imgHeight = image.naturalHeight;
+                // Wait for the image to load
+                await new Promise((resolve, reject) => {
+                  image.onload = resolve;
+                  image.onerror = reject;
+                });
 
-              // Calculate the maximum width and height based on available page space
-              const maxWidth = doc.internal.pageSize.width - 20; // 10px margin on each side
-              const maxHeight = doc.internal.pageSize.height - yPosition - 10; // Allow some space for other content
+                // Calculate the image size based on available space
+                const { scaledWidth, scaledHeight } = calculateImageSize(
+                  image,
+                  yPosition
+                );
 
-              // Calculate aspect ratio and resize image accordingly
-              let scaleFactor = Math.min(
-                maxWidth / imgWidth,
-                maxHeight / imgHeight
-              );
-
-              // Apply the scale factor to both width and height
-              const scaledWidth = imgWidth * scaleFactor;
-              const scaledHeight = imgHeight * scaleFactor;
-
-              // Insert the image in the PDF while maintaining the original aspect ratio
-              doc.text("Answer:", 10, yPosition); // Optional text for answer
-              yPosition += 6;
-              doc.addImage(
-                image,
-                "JPEG",
-                10,
-                yPosition,
-                scaledWidth,
-                scaledHeight
-              ); // Insert scaled image
-              yPosition += scaledHeight + 6; // Adjust y-position after image
+                // Insert the image in the PDF
+                doc.addImage(
+                  image,
+                  "JPEG",
+                  10,
+                  yPosition,
+                  scaledWidth,
+                  scaledHeight
+                );
+                yPosition += scaledHeight + 6; // Adjust yPosition after image
+                addPageIfNeeded(); // Check again after adding the image
+              }
+            } else {
+              doc.text("Answer: File Uploaded", 10, yPosition); // For non-image files
+              yPosition += 12;
+              addPageIfNeeded(); // Check again if needed
             }
           } else {
-            doc.text("Answer: File Uploaded", 10, yPosition); // For non-image files
+            doc.text("Answer: No answer", 10, yPosition);
             yPosition += 12;
+            addPageIfNeeded();
           }
-        } else {
-          doc.text("Answer: No answer", 10, yPosition);
-          yPosition += 12;
         }
       }
 
       // Save the PDF
       const pdfBlob = doc.output("blob");
       const pdfUrl = URL.createObjectURL(pdfBlob);
-      //   window.open(pdfUrl, "_blank");
       const file = new File(
         [pdfBlob],
         `exam-answers-${examId}-${studentId}.pdf`,
@@ -355,7 +335,6 @@ const Action = () => {
       );
 
       await uploadPDF(file);
-      //   alert("PDF uploaded successfully!");
     } catch (error) {
       console.error("Error generating or uploading PDF", error);
       alert("Failed to generate PDF. Please try again.");
@@ -425,8 +404,8 @@ const Action = () => {
       );
       if (!result) return;
     }
-    generatePDF();
     try {
+      generatePDF();
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/exam-students/${
           examData.id

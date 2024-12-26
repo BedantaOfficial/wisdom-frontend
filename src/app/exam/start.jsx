@@ -1,15 +1,22 @@
 import { CircularProgress, Button, Typography } from "@mui/material";
 import axios from "axios";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Start = () => {
   const examId = localStorage.getItem("examId");
   const studentId = localStorage.getItem("studentId");
+
   const [examDetails, setExamDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [starting, setStarting] = useState(false); // To handle the loading state for starting exam
   const navigate = useNavigate();
+
+  if (!examId || !studentId) {
+    navigate("/exam");
+    return null;
+  }
 
   const fetchExamStudentDetails = async () => {
     setLoading(true);
@@ -21,14 +28,23 @@ const Start = () => {
         }
       );
       const details = response?.data?.examDetails;
+      console.log(details);
       setExamDetails(details);
 
-      if (!details) {
+      if (!details || !details.examination) {
         navigate("/exam");
+        return;
+      }
+      if (!moment(details.examination?.exam_date).isSame(moment(), "day")) {
+        toast.error("The exam date has passed");
+        navigate("/exam/");
+        return;
       }
 
       if (details?.started_at) {
-        navigate("/exam/action"); // Redirect if the exam has already started
+        console.log("Go");
+        navigate("/exam/action");
+        return;
       }
     } catch (error) {
       console.log(error);
@@ -67,6 +83,7 @@ const Start = () => {
       );
       if (response.status === 200) {
         navigate("/exam/action");
+        return;
       } else {
         console.log("Failed to start exam");
       }

@@ -1,3 +1,4 @@
+import { TextareaAutosize } from "@mui/material";
 import React from "react";
 
 const TheoryQuestions = ({
@@ -5,36 +6,31 @@ const TheoryQuestions = ({
   selectedAnswers,
   handleAnswerChange,
 }) => {
-  const handleFileChange = (questionId, event) => {
-    const file = event.target.files[0];
-    if (file) {
-      handleAnswerChange(questionId, file);
-    }
+  const handleChange = (questionId, event) => {
+    const answer = event.target.value;
+    handleAnswerChange(questionId, answer);
   };
 
   return (
-    <div className="space-y-6" id="theory-section">
+    <div className="space-y-6 mb-32 md:mb-2" id="theory-section">
       {questions.map((question, index) => (
         <div key={question.id} className="border-b-2 border-gray-200 pb-6">
           <p className="font-semibold text-lg text-gray-800">
             {index + 1}. {question.question}
           </p>
           <div className="mt-4 space-y-3">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleFileChange(question.id, e)}
-              className="border-2 border-gray-300 p-2 rounded-md"
+            <label
+              htmlFor={`question-${question.id}`}
+              className="block text-gray-700"
+            >
+              Your Answer:
+            </label>
+            <TextareaAutosize
+              id={`question-${question.id}`}
+              value={selectedAnswers[question.id] || ""}
+              onChange={(event) => handleChange(question.id, event)}
+              className="w-full p-2 border border-gray-300 rounded"
             />
-            {selectedAnswers[question.id] && (
-              <div className="mt-2">
-                <img
-                  src={URL.createObjectURL(selectedAnswers[question.id])}
-                  alt="Uploaded"
-                  className="max-w-xs rounded-lg"
-                />
-              </div>
-            )}
           </div>
         </div>
       ))}

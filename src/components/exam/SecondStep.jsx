@@ -22,7 +22,7 @@ const SecondStep = ({
 }) => {
   const token = getAuthToken();
   if (!token) {
-    window.location.href = import.meta.env.VITE_MAIN_URL;
+    window.location.href = window.env.VITE_MAIN_URL;
   }
 
   const [loading, setLoading] = useState(false);
@@ -33,7 +33,7 @@ const SecondStep = ({
     setLoading(true);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/courses`,
+        `${window.env.VITE_BASE_URL}/api/v1/courses`,
         {
           headers: {
             "X-Auth-Token": `${token}`,

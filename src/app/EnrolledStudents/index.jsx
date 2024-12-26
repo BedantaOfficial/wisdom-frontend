@@ -13,7 +13,7 @@ const EnrolledStudents = () => {
   const token = getAuthToken();
 
   if (!token) {
-    window.location.href = import.meta.env.VITE_MAIN_URL;
+    window.location.href = window.env.VITE_MAIN_URL;
   }
 
   const [exams, setExams] = useState([]);
@@ -32,7 +32,7 @@ const EnrolledStudents = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/exams`,
+        `${window.env.VITE_BASE_URL}/api/v1/exams`,
         {
           headers: {
             "X-Auth-Token": `${token}`,
@@ -56,7 +56,7 @@ const EnrolledStudents = () => {
     setLoading("examDetails");
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/exams/${examDate}`,
+        `${window.env.VITE_BASE_URL}/api/v1/exams/${examDate}`,
         {
           headers: {
             "X-Auth-Token": `${token}`,
@@ -123,7 +123,7 @@ const EnrolledStudents = () => {
     try {
       // Logic to update marks (example API request)
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/exams/updateMarks`,
+        `${window.env.VITE_BASE_URL}/api/v1/exams/updateMarks`,
         {
           examId: selectedExam.id,
           marks: JSON.stringify(marks),
@@ -184,7 +184,7 @@ const EnrolledStudents = () => {
           className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
         >
           <img
-            src={`${import.meta.env.VITE_FILE_URL}/${student.filename}`}
+            src={`${window.env.VITE_FILE_URL}/${student.filename}`}
             alt={student.name}
             className="w-16 h-16 rounded-full object-cover"
           />

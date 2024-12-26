@@ -20,16 +20,14 @@ const StudentAttendanceReport = () => {
   const id = params.id;
   const token = getAuthToken();
   if (!token) {
-    window.location.href = import.meta.env.VITE_MAIN_URL;
+    window.location.href = window.env.VITE_MAIN_URL;
   }
 
   const fetchCourseRange = async () => {
     setRangeLoading(true);
     try {
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_BASE_URL
-        }/api/v1/students/course-range?student_id=${id}`,
+        `${window.env.VITE_BASE_URL}/api/v1/students/course-range?student_id=${id}`,
         {
           headers: {
             "X-Auth-Token": token,
@@ -68,9 +66,7 @@ const StudentAttendanceReport = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_BASE_URL
-        }/api/v1/attendance/all?student_id=${id}`,
+        `${window.env.VITE_BASE_URL}/api/v1/attendance/all?student_id=${id}`,
         {
           headers: {
             "X-Auth-Token": token,

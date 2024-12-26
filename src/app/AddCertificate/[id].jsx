@@ -20,7 +20,7 @@ const AddCertificate = () => {
 
   const token = getAuthToken();
   if (!token) {
-    window.location.href = import.meta.env.VITE_MAIN_URL;
+    window.location.href = window.env.VITE_MAIN_URL;
   }
 
   const handleCertificateUpload = (event) => {
@@ -65,9 +65,7 @@ const AddCertificate = () => {
     formData.append("certificate", certificateFile);
     formData.append("marksheet", marksheetFile);
 
-    const URL = `${
-      import.meta.env.VITE_BASE_URL
-    }/api/v1/certificates?student_id=${id}`;
+    const URL = `${window.env.VITE_BASE_URL}/api/v1/certificates?student_id=${id}`;
     const response = await fetch(URL, {
       method: "POST",
       headers: {
@@ -96,18 +94,14 @@ const AddCertificate = () => {
   const fetchCertificates = async () => {
     try {
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_BASE_URL
-        }/api/pubilc/certificates?student_id=${id}`
+        `${window.env.VITE_BASE_URL}/api/pubilc/certificates?student_id=${id}`
       );
       console.log(response);
       if (response.status === 200) {
         setCertificateSrc(
-          import.meta.env.VITE_PUBLIC_URL + response.data?.certificates
+          window.env.VITE_PUBLIC_URL + response.data?.certificates
         );
-        setMarksheetSrc(
-          import.meta.env.VITE_PUBLIC_URL + response.data?.marksheet
-        );
+        setMarksheetSrc(window.env.VITE_PUBLIC_URL + response.data?.marksheet);
       }
     } catch (error) {
       console.error("Error fetching certificates:", error);

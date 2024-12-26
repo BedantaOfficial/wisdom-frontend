@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 const FirstStep = ({ selectedStudents, setSelectedStudents, handleNext }) => {
   const token = getAuthToken();
   if (!token) {
-    window.location.href = import.meta.env.VITE_MAIN_URL;
+    window.location.href = window.env.VITE_MAIN_URL;
   }
 
   const [users, setUsers] = useState([]);
@@ -29,7 +29,7 @@ const FirstStep = ({ selectedStudents, setSelectedStudents, handleNext }) => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/students`,
+        `${window.env.VITE_BASE_URL}/api/v1/students`,
         {
           headers: {
             "X-Auth-Token": `${token}`,
@@ -98,7 +98,7 @@ const FirstStep = ({ selectedStudents, setSelectedStudents, handleNext }) => {
                 className="text-blue-500"
               />
               <img
-                src={`${import.meta.env.VITE_FILE_URL}/${student.filename}`}
+                src={`${window.env.VITE_FILE_URL}/${student.filename}`}
                 alt={student.name}
                 className="w-12 h-12 rounded-full border-2 border-gray-300"
               />

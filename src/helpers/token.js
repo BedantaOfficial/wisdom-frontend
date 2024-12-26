@@ -1,5 +1,5 @@
 export function getAuthToken() {
-  return getCookie("auth_token") || import.meta.env.VITE_TEST_TOKEN;
+  return getCookie("auth_token") || window.env.VITE_TEST_TOKEN;
 }
 
 // Helper function to get the cookie value by name

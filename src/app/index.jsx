@@ -11,15 +11,13 @@ import attendanceImg from "../assets/images/attendance.jpg";
 const Home = () => {
   const token = getAuthToken();
   if (!token) {
-    window.location.href = import.meta.env.VITE_MAIN_URL;
+    window.location.href = window.env.VITE_MAIN_URL;
   }
   return (
     <div id="root-body">
       <IconButton
         onClick={() =>
-          (window.location.href = `${
-            import.meta.env.VITE_MAIN_URL
-          }/index.php/dashboard`)
+          (window.location.href = `${window.env.VITE_MAIN_URL}/index.php/dashboard`)
         }
         style={{
           position: "fixed",
@@ -31,7 +29,7 @@ const Home = () => {
       >
         <ArrowBack />
       </IconButton>
-      <div className="header-title">Wisdom Computer Centre</div>
+      <div className="header-title">{window.env.VITE_SITE_NAME}</div>
       <div className="header-subtitle">Smart Class</div>
       <div className="icon-grid">
         {/* Link for Attendance Report */}

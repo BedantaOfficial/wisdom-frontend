@@ -63,10 +63,26 @@ const ShortPrint = () => {
       <div style={styles.body}>
         <div ref={reportRef} style={styles.container}>
           <div style={styles.header}>
-            <p style={styles.headerContent}>WISDOM COMPUTER</p>
-            <p style={styles.headerContent}>SMART CLASS</p>
-            <p style={styles.headerContent}>+917002331984</p>
-            <p style={styles.headerContent}>Rajbanglow Road , Karimganj</p>
+            {window.env.VITE_RECEIP_HEADER_1 && (
+              <p style={styles.headerContent}>
+                {window.env.VITE_RECEIP_HEADER_1}
+              </p>
+            )}
+            {window.env.VITE_RECEIP_HEADER_2 && (
+              <p style={styles.headerContent}>
+                {window.env.VITE_RECEIP_HEADER_2}
+              </p>
+            )}
+            {window.env.VITE_RECEIPT_PHONE && (
+              <p style={styles.headerContent}>
+                {window.env.VITE_RECEIPT_PHONE}
+              </p>
+            )}
+            {window.env.VITE_RECEIPT_ADDRESS && (
+              <p style={styles.headerContent}>
+                {window.env.VITE_RECEIPT_ADDRESS}
+              </p>
+            )}
           </div>
           <div style={styles.feeTitle}>Fee Collection Receipt</div>
           <div style={styles.details}>

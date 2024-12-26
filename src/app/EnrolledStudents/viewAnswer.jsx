@@ -20,7 +20,7 @@ const ViewAnswer = () => {
   const fetchDetails = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/exam-students`,
+        `${window.env.VITE_BASE_URL}/api/exam-students`,
         {
           params: { studentId, examId },
         }
@@ -57,7 +57,7 @@ const ViewAnswer = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/exams/giveMarks`,
+        `${window.env.VITE_BASE_URL}/api/v1/exams/giveMarks`,
         {
           studentId,
           examId,
@@ -104,7 +104,7 @@ const ViewAnswer = () => {
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Answer File</h1>
         {answerFileUrl ? (
           <a
-            href={import.meta.env.VITE_PUBLIC_URL + answerFileUrl}
+            href={window.env.VITE_PUBLIC_URL + answerFileUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 underline"

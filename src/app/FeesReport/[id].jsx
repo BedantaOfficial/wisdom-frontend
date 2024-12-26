@@ -83,7 +83,7 @@ const LongPrint = () => {
   const navigate = useNavigate();
 
   if (!token) {
-    window.location.href = import.meta.env.VITE_MAIN_URL;
+    window.location.href = window.env.VITE_MAIN_URL;
   }
 
   const [payments, setPayments] = useState([]);
@@ -92,7 +92,7 @@ const LongPrint = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/payments/all?user_id=${id}`,
+        `${window.env.VITE_BASE_URL}/api/v1/payments/all?user_id=${id}`,
         {
           headers: {
             "X-Auth-Token": token,
@@ -180,10 +180,26 @@ const LongPrint = () => {
         </IconButton>
         <div ref={componentRef} style={styles.container}>
           <div style={styles.header}>
-            <p style={styles.headerContent}>WISDOM COMPUTER</p>
-            <p style={styles.headerContent}>SMART CLASS</p>
-            <p style={styles.headerContent}>+917002331984</p>
-            <p style={styles.headerContent}>Rajbanglow Road , Karimganj</p>
+            {window.env.VITE_RECEIP_HEADER_1 && (
+              <p style={styles.headerContent}>
+                {window.env.VITE_RECEIP_HEADER_1}
+              </p>
+            )}
+            {window.env.VITE_RECEIP_HEADER_2 && (
+              <p style={styles.headerContent}>
+                {window.env.VITE_RECEIP_HEADER_2}
+              </p>
+            )}
+            {window.env.VITE_RECEIPT_PHONE && (
+              <p style={styles.headerContent}>
+                {window.env.VITE_RECEIPT_PHONE}
+              </p>
+            )}
+            {window.env.VITE_RECEIPT_ADDRESS && (
+              <p style={styles.headerContent}>
+                {window.env.VITE_RECEIPT_ADDRESS}
+              </p>
+            )}
           </div>
           <div style={styles.feeTitle}>Fee Collection Receipt</div>
           <div style={styles.details}>

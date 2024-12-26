@@ -17,13 +17,13 @@ const ExpenseReport = () => {
   const navigate = useNavigate();
 
   if (!token) {
-    window.location.href = import.meta.env.VITE_MAIN_URL;
+    window.location.href = window.env.VITE_MAIN_URL;
   }
 
   const fetchExpenses = async () => {
     setLoading(true);
     const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/api/v1/expenses`,
+      `${window.env.VITE_BASE_URL}/api/v1/expenses`,
       {
         headers: {
           "X-Auth-Token": token,
@@ -46,7 +46,7 @@ const ExpenseReport = () => {
 
     setLoading(true);
     const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/api/v1/expenses`,
+      `${window.env.VITE_BASE_URL}/api/v1/expenses`,
       {
         name,
         type,

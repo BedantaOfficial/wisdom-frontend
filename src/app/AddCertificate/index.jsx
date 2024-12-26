@@ -15,7 +15,7 @@ function getRandomColor() {
 function StudenList() {
   const token = getAuthToken();
   if (!token) {
-    window.location.href = import.meta.env.VITE_MAIN_URL;
+    window.location.href = window.env.VITE_MAIN_URL;
   }
 
   const [loading, setLoading] = useState(false);
@@ -29,7 +29,7 @@ function StudenList() {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/students`,
+        `${window.env.VITE_BASE_URL}/api/v1/students`,
         {
           headers: {
             "X-Auth-Token": `${token}`,
@@ -91,7 +91,7 @@ function StudenList() {
           marginTop: 50,
         }}
       >
-        WISDOM COMPUTER CENTRE
+        {window.env.VITE_SITE_NAME}
       </h2>
       <h3 style={{ textAlign: "center", color: "#0000FF" }}>Smart Class</h3>
       <div
@@ -148,7 +148,7 @@ function StudenList() {
             >
               <div>
                 <img
-                  src={`${import.meta.env.VITE_FILE_URL}/${user.filename}`}
+                  src={`${window.env.VITE_FILE_URL}/${user.filename}`}
                   alt={user.name}
                   style={{
                     width: 50,

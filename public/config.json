@@ -1,0 +1,12 @@
+{
+  "VITE_BASE_URL": "https://api-wisdom.code-crafters.shop",
+  "VITE_PUBLIC_URL": "https://api-wisdom.code-crafters.shop/storage/app/public/",
+  "VITE_FILE_URL": "https://wisdom.code-crafters.shop/uploads/",
+  "VITE_MAIN_URL": "https://wisdom.code-crafters.shop",
+  "VITE_SITE_NAME": "Wisdom Computer Centre",
+  "VITE_RECEIP_HEADER_1": "WISDOM COMPUTER",
+  "VITE_RECEIP_HEADER_2": "SMART CLASS",
+  "VITE_RECEIPT_PHONE": "+917002331984",
+  "VITE_RECEIPT_ADDRESS": "Rajbanglow Road , Karimganj",
+  "VITE_TEST_TOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicGFzc3dvcmQiOiIxMjM0NSJ9.nyuYqVW7wP4LezHMR2a5K_Zypdgp4CKqfECVqeEHnrQ"
+}

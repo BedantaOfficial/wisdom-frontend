@@ -22,7 +22,7 @@ const Start = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/exam-students`,
+        `${window.env.VITE_BASE_URL}/api/exam-students`,
         {
           params: { studentId, examId },
         }
@@ -78,7 +78,7 @@ const Start = () => {
     try {
       // Call the API to start the exam
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/exam-students/startexam`,
+        `${window.env.VITE_BASE_URL}/api/exam-students/startexam`,
         { examId, studentId }
       );
       if (response.status === 200) {

@@ -29,7 +29,7 @@ const FeesReport = () => {
 
   const token = getAuthToken(); // Get the token
   if (!token) {
-    window.location.href = import.meta.env.VITE_MAIN_URL;
+    window.location.href = window.env.VITE_MAIN_URL;
   }
 
   const handleClick = (event) => {
@@ -46,7 +46,7 @@ const FeesReport = () => {
 
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/payments`,
+        `${window.env.VITE_BASE_URL}/api/v1/payments`,
         {
           headers: {
             "X-Auth-Token": token,
@@ -105,9 +105,7 @@ const FeesReport = () => {
 
     try {
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_BASE_URL
-        }/api/v1/payments?start_date=${s}&end_date=${e}`,
+        `${window.env.VITE_BASE_URL}/api/v1/payments?start_date=${s}&end_date=${e}`,
         {
           headers: {
             "X-Auth-Token": token,
@@ -253,7 +251,7 @@ const FeesReport = () => {
             <div className="student-item" key={index} data-date={payment.date}>
               <div>
                 <img
-                  src={`${import.meta.env.VITE_FILE_URL}/${payment.filename}`}
+                  src={`${window.env.VITE_FILE_URL}/${payment.filename}`}
                   alt={payment.name}
                   style={{
                     width: 50,
@@ -279,9 +277,7 @@ const FeesReport = () => {
                 <VisibilityIcon
                   fontSize="4"
                   onClick={() =>
-                    (window.location.href = `${
-                      import.meta.env.VITE_MAIN_URL
-                    }/index.php/feeinfo/${payment.user_id}`)
+                    (window.location.href = `${window.env.VITE_MAIN_URL}/index.php/feeinfo/${payment.user_id}`)
                   }
                 />
                 <FileCopy

@@ -26,18 +26,14 @@ const MyCertificate = () => {
   const fetchCertificates = async () => {
     try {
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_BASE_URL
-        }/api/pubilc/certificates?student_id=${id}`
+        `${window.env.VITE_BASE_URL}/api/pubilc/certificates?student_id=${id}`
       );
       console.log(response);
       if (response.status === 200) {
         setCertificate(
-          import.meta.env.VITE_PUBLIC_URL + response.data?.certificates
+          window.env.VITE_PUBLIC_URL + response.data?.certificates
         );
-        setMarksheet(
-          import.meta.env.VITE_PUBLIC_URL + response.data?.marksheet
-        );
+        setMarksheet(window.env.VITE_PUBLIC_URL + response.data?.marksheet);
       }
     } catch (error) {
       console.error("Error fetching certificates:", error);

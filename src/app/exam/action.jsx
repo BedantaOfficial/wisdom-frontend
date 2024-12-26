@@ -44,7 +44,7 @@ const Action = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/exam-students/all`,
+        `${window.env.VITE_BASE_URL}/api/exam-students/all`,
         {
           params: { studentId, examId },
         }
@@ -146,9 +146,7 @@ const Action = () => {
 
     try {
       await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/exam-students/${
-          examData.id
-        }/upload-pdf`,
+        `${window.env.VITE_BASE_URL}/api/exam-students/${examData.id}/upload-pdf`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -407,9 +405,7 @@ const Action = () => {
     try {
       generatePDF();
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/exam-students/${
-          examData.id
-        }/submit`
+        `${window.env.VITE_BASE_URL}/api/exam-students/${examData.id}/submit`
       );
       if (response.status === 200) {
         toast.success("Exam Submitted successfully");

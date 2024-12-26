@@ -16,7 +16,7 @@ const ManageExam = () => {
   const token = getAuthToken();
   console.log(token);
   if (!token) {
-    window.location.href = import.meta.env.VITE_MAIN_URL;
+    window.location.href = window.env.VITE_MAIN_URL;
   }
   const [currentStep, setCurrentStep] = useState(0);
   // Available paper types
@@ -89,7 +89,7 @@ const ManageExam = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/exams`,
+        `${window.env.VITE_BASE_URL}/api/v1/exams`,
         data,
         {
           headers: {

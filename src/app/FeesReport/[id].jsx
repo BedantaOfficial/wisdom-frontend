@@ -26,6 +26,26 @@ const LongPrint = () => {
   const payment = location.state;
   console.log(payment);
   const componentRef = useRef();
+  const [discount, setDiscount] = useState(0);
+  const [paid, setPaid] = useState(0);
+  const [payments, setPayments] = useState([]);
+
+  useEffect(() => {
+    let paid = 0;
+    if (payment.admission_fees && payments) {
+      paid = payments
+        ?.reduce(
+          (acc, p) => acc + parseFloat(p.amount),
+          parseFloat(payment.admission_fees)
+        )
+        .toFixed(2);
+      setPaid(paid);
+    }
+    console.log(payment.total_fees, paid);
+    const discount = payment.total_fees - paid;
+    console.log(discount);
+    if (payment.total_fees) setDiscount(discount);
+  }, [payment.total_fees, payment.admission_fees, payments]);
 
   const handlePrint = () => {
     const content = componentRef.current;
@@ -85,8 +105,6 @@ const LongPrint = () => {
   if (!token) {
     window.location.href = window.env.VITE_MAIN_URL;
   }
-
-  const [payments, setPayments] = useState([]);
 
   const fetchPayments = async () => {
     setLoading(true);
@@ -223,6 +241,16 @@ const LongPrint = () => {
               <span>Admission Fees</span>
               <span>{payment.admission_fees} paid</span>
             </div>
+            <div style={styles.detailsContent}>
+              <span>Total Fees</span>
+              <span>{payment.total_fees ?? "N/A"}</span>
+            </div>
+            <div style={styles.detailsContent}>
+              <span>Due Fees</span>
+              <span>
+                {payment.total_fees ? payment.total_fees - paid : "N/A"}
+              </span>
+            </div>
           </div>
           <div style={styles.details}>
             <div
@@ -260,6 +288,30 @@ const LongPrint = () => {
                 </span>
               </div>
             ))}
+            {discount && (
+              <div
+                style={{
+                  ...styles.detailsContent,
+                  borderBottom: "1px solid #ddd",
+                  padding: "5px 5px",
+                }}
+              >
+                <span>DISCOUNTED</span>
+                <span>
+                  {payments?.at(-1)?.updated_at
+                    ? formatDate(payments?.at(-1).updated_at)
+                    : "----------"}
+                </span>
+                <span
+                  style={{
+                    minWidth: "100px",
+                    textAlign: "right",
+                  }}
+                >
+                  {discount}
+                </span>
+              </div>
+            )}
             <div
               style={{
                 ...styles.detailsContent,
@@ -270,20 +322,13 @@ const LongPrint = () => {
               }}
             >
               <div>TOTAL</div>
-              <div>
-                {payments
-                  ?.reduce(
-                    (acc, p) => acc + parseFloat(p.amount),
-                    parseFloat(payment.admission_fees)
-                  )
-                  .toFixed(2)}
-              </div>
+              <div>{paid}</div>
             </div>
           </div>
           <div style={styles.thankyou}>
             THANK YOU
             <br />
-            WISDOM SMART CLASS
+            {window.env?.VITE_RECEIPT_FOOTER}
           </div>
         </div>
       </div>

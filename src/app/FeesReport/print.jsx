@@ -130,7 +130,7 @@ const ShortPrint = () => {
           <div style={styles.thankyou}>
             THANK YOU
             <br />
-            WISDOM SMART CLASS
+            {window.env.VITE_RECEIPT_FOOTER}
           </div>
         </div>
       </div>

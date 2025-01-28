@@ -1,11 +1,12 @@
-import { ArrowBack, Print, Visibility } from "@mui/icons-material";
+import { ArrowBack, Delete, Print, Visibility } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { getAuthToken } from "../../helpers/token";
 import moment from "moment";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import AddStudentsModal from "../../components/exam/addStudentsModal";
 
 const EnrolledStudents = () => {
   const navigate = useNavigate();
@@ -24,9 +25,12 @@ const EnrolledStudents = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [updatingMarks, setUpdatingMarks] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const [marks, setMarks] = useState({});
   const [papers, setPapers] = useState({});
+  const [searchParams] = useSearchParams();
+  const date = searchParams.get("date");
 
   const fetchExams = async () => {
     setLoading(true);
@@ -68,7 +72,8 @@ const EnrolledStudents = () => {
         const students = response.data?.examination?.students;
         const examination = response.data?.examination;
 
-        const fetchedPapers = examination?.course?.papers;
+        const fetchedPapers = examination?.course?.papers || [];
+        console.log(fetchedPapers);
         const papers = {};
         fetchedPapers.forEach((paper) => {
           papers[paper.paper_code] = paper.name;
@@ -98,13 +103,6 @@ const EnrolledStudents = () => {
 
   const handleDateSelect = async (date) => {
     navigate(`/enrolledStudents?date=${moment(date).format("YYYY-MM-DD")}`);
-    // const selectedExam = exams.find((exam) =>
-    //   moment(exam.exam_date).isSame(date, "day")
-    // );
-    // if (selectedExam) {
-    //   setSelectedExam(selectedExam);
-    //   await fetchExamDetails(selectedExam?.exam_date);
-    // }
   };
 
   const handleSearch = (e) => {
@@ -144,6 +142,10 @@ const EnrolledStudents = () => {
     }
   };
 
+  const handleStudentEnrolled = () => {
+    fetchExamDetails(selectedExam?.exam_date);
+  };
+
   const examDates = exams.map((exam) =>
     moment(exam.exam_date).format("YYYY-MM-DD")
   );
@@ -153,14 +155,40 @@ const EnrolledStudents = () => {
     return examDates.includes(formattedDate);
   };
 
-  useEffect(() => {
-    if (!exams) return console.log("object");
-    const search = location?.search;
-    let date = null;
-    if (search) {
-      const searchParams = new URLSearchParams(search);
-      date = searchParams.get("date");
+  const handleRemoveStudent = async (examId, studentId) => {
+    if (!confirm("Are you sure you want to remove")) return;
+    try {
+      const response = await axios.delete(
+        `${window.env.VITE_BASE_URL}/api/v1/exam-students/removeStudent`,
+        {
+          headers: {
+            "X-Auth-Token": `${token}`,
+          },
+          data: {
+            examId,
+            studentId,
+          },
+        }
+      );
+      if (response.status === 200) {
+        alert("Student removed successfully!");
+        const updatedStudents = students.filter(
+          (student) => student.id !== studentId
+        );
+        setStudents(updatedStudents);
+        const filtered = updatedStudents.filter(
+          (student) =>
+            student.name?.toLowerCase().includes(searchQuery) ||
+            student.email?.toLowerCase().includes(searchQuery)
+        );
+        setFilteredStudents(filtered);
+      }
+    } catch (error) {
+      console.error("Error removing student:", error);
     }
+  };
+
+  useEffect(() => {
     if (date) {
       const selectedExam = exams.find((exam) =>
         moment(exam.exam_date).isSame(date, "day")
@@ -170,7 +198,7 @@ const EnrolledStudents = () => {
         fetchExamDetails(selectedExam?.exam_date);
       }
     }
-  }, [exams, location, location.search]);
+  }, [exams, date]);
 
   useEffect(() => {
     fetchExams();
@@ -203,12 +231,12 @@ const EnrolledStudents = () => {
             >
               <Visibility />
             </button>
-            {/* <button
-              onClick={() => console.log("Print clicked for", student.name)}
-              className="text-blue-600 hover:text-blue-800 transition"
+            <button
+              onClick={() => handleRemoveStudent(selectedExam.id, student.id)}
+              className="text-red-600 hover:text-red-800 transition"
             >
-              <Print />
-            </button> */}
+              <Delete />
+            </button>
           </div>
         </div>
       ))}
@@ -264,13 +292,22 @@ const EnrolledStudents = () => {
                 </div>
               ))}
             </div>
-            <button
-              onClick={handleUpdateMarks}
-              className="px-6 py-2 text-white bg-green-600 hover:bg-green-700 rounded-md"
-              disabled={updatingMarks}
-            >
-              {updatingMarks ? "Updating..." : "Update Total Marks"}
-            </button>
+            <div className="flex justify-between">
+              <button
+                onClick={handleUpdateMarks}
+                className="px-6 py-2 text-white bg-green-600 hover:bg-green-700 rounded-md"
+                disabled={updatingMarks}
+              >
+                {updatingMarks ? "Updating..." : "Update Total Marks"}
+              </button>
+              <button
+                onClick={() => setModalOpen(true)}
+                className="px-6 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                // disabled={updatingMarks}
+              >
+                Add students
+              </button>
+            </div>
 
             <div className="w-full">
               <input
@@ -285,6 +322,15 @@ const EnrolledStudents = () => {
           </div>
         )}
       </div>
+
+      {/* Add Students Modal */}
+      <AddStudentsModal
+        examId={selectedExam?.id}
+        open={isModalOpen}
+        setOpen={setModalOpen}
+        token={token}
+        onStudentEnrolled={handleStudentEnrolled}
+      />
     </div>
   );
 };

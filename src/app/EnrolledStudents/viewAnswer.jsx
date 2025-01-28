@@ -29,9 +29,13 @@ const ViewAnswer = () => {
       if (response?.status === 200 && response?.data?.examDetails) {
         const examination = response?.data?.examDetails?.examination;
 
-        const fetchedPapers = examination?.papers;
+        const fetchedPapers = (examination?.papers || [])?.filter(
+          (paper) => paper.semester === examination.semester
+        );
+        console.log(fetchedPapers);
+
         const papers = {};
-        fetchedPapers.forEach((paper) => {
+        fetchedPapers?.forEach((paper) => {
           papers[paper.paper_code] = paper.name;
         });
 

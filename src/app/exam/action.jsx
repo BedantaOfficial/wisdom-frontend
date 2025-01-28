@@ -159,164 +159,181 @@ const Action = () => {
 
   const generatePDF = async () => {
     const doc = new jsPDF();
-    const margin = 10; // Margin for the content
+    const margin = 10;
     const pageHeight = doc.internal.pageSize.height;
+    const pageWidth = doc.internal.pageSize.width;
+    const wrapText = (text, maxWidth) => {
+      const lines = [];
+      const words = text.split("\n"); // Split by new line first
+      let currentLine = "";
+
+      words.forEach((word) => {
+        const wordArray = word.split(" "); // Now handle space-based word wrapping
+        wordArray.forEach((subWord) => {
+          const testLine = currentLine ? `${currentLine} ${subWord}` : subWord;
+          const testWidth = doc.getTextWidth(testLine);
+
+          if (testWidth <= maxWidth) {
+            currentLine = testLine;
+          } else {
+            lines.push(currentLine);
+            currentLine = subWord; // Start a new line with the current word
+          }
+        });
+        if (currentLine) {
+          lines.push(currentLine);
+          currentLine = ""; // Reset currentLine after a complete line
+        }
+      });
+
+      return lines;
+    };
+
+    const addNewPage = () => {
+      doc.addPage();
+      return margin; // Reset yPosition for the new page
+    };
+
+    const addSectionTitle = (title, yPosition) => {
+      doc.setFontSize(16);
+      const titleWidth = doc.getTextWidth(title);
+      doc.text(title, (pageWidth - titleWidth) / 2, yPosition);
+      return yPosition + 10; // Update yPosition and return it
+    };
 
     try {
       if (!examData) return;
 
       const { examination } = examData;
-
-      let yPosition = margin;
-
-      const addPageIfNeeded = () => {
-        const remainingSpace = pageHeight - yPosition - margin;
-        if (remainingSpace < 50) {
-          // Add a condition to check for remaining space (adjust 50 as needed)
-          doc.addPage();
-          yPosition = margin; // Reset yPosition for the new page
-        }
-      };
-
-      const calculateImageSize = (image, yPosition) => {
-        const maxWidth = doc.internal.pageSize.width - 20; // 10px margin on each side
-        const remainingHeight = pageHeight - yPosition - margin; // Allow space for content
-
-        // Calculate aspect ratio and scale image accordingly
-        const scaleFactor = Math.min(
-          maxWidth / image.width,
-          remainingHeight / image.height
-        );
-
-        const scaledWidth = image.width * scaleFactor;
-        const scaledHeight = image.height * scaleFactor;
-
-        return { scaledWidth, scaledHeight };
-      };
-
-      // MCQ Section
-      if (examination.mcq) {
-        const mcqSectionTitle = "MCQ Section";
-        doc.setFontSize(16);
-        const mcqTitleWidth =
-          doc.getStringUnitWidth(mcqSectionTitle) * doc.internal.scaleFactor;
-        doc.text(
-          mcqSectionTitle,
-          (doc.internal.pageSize.width - mcqTitleWidth) / 2,
-          yPosition
-        ); // Center the title
-        yPosition += 10;
-
-        examination.mcq_question.question_details.forEach((question, index) => {
-          const answer = mcqAnswers[question.id];
-          doc.setFontSize(12);
-          doc.text(`${index + 1}. ${question.question}`, 10, yPosition);
-          yPosition += 6;
-          addPageIfNeeded();
-          doc.text(`Answer: ${answer || "No answer"}`, 10, yPosition);
-          yPosition += 12;
-          addPageIfNeeded();
-        });
-        doc.addPage();
-      }
+      let yPosition = margin; // Initialize yPosition here
 
       // Theory Section
       if (examination.theory) {
-        yPosition = margin;
-        const theorySectionTitle = "Theory Section";
-        doc.setFontSize(16);
-        const theoryTitleWidth =
-          doc.getStringUnitWidth(theorySectionTitle) * doc.internal.scaleFactor;
-        doc.text(
-          theorySectionTitle,
-          (doc.internal.pageSize.width - theoryTitleWidth) / 2,
-          yPosition
-        ); // Center the title
-        yPosition += 10;
+        yPosition = addSectionTitle("Theory Section", yPosition);
 
         examination.theory_question.question_details.forEach(
           (question, index) => {
-            const answer = theoryAnswers[question.id];
+            const maxLineWidth = pageWidth - 2 * margin;
+            const questionText = `${index + 1}. ${question.question}`;
+            const wrappedQuestion = wrapText(questionText, maxLineWidth);
+
             doc.setFontSize(12);
-            doc.text(`${index + 1}. ${question.question}`, 10, yPosition);
+            wrappedQuestion.forEach((line) => {
+              doc.text(line, margin, yPosition);
+              yPosition += 6;
+              if (yPosition + 6 > pageHeight - margin) {
+                yPosition = addNewPage();
+              }
+            });
+
+            const answer = theoryAnswers[question.id] || "No answer";
+            const wrappedAnswer = wrapText(answer, maxLineWidth);
             yPosition += 6;
-            addPageIfNeeded();
-            doc.text(`Answer: ${answer || "No answer"}`, 10, yPosition);
-            yPosition += 12;
-            addPageIfNeeded();
+            doc.text(`Answer:`, margin, yPosition);
+            yPosition += 6;
+            wrappedAnswer.forEach((line) => {
+              doc.text(line, margin, yPosition);
+              yPosition += 6;
+              if (yPosition + 6 > pageHeight - margin) {
+                yPosition = addNewPage();
+              }
+            });
+
+            yPosition += 12; // Add space between Q&A
+            if (yPosition + 12 > pageHeight - margin) {
+              yPosition = addNewPage();
+            }
           }
         );
-        doc.addPage();
+      }
+
+      // MCQ Section
+      if (examination.mcq) {
+        yPosition = addNewPage();
+        yPosition = addSectionTitle("MCQ Section", yPosition);
+
+        examination.mcq_question.question_details.forEach((question, index) => {
+          const maxLineWidth = pageWidth - 2 * margin;
+          const questionText = `${index + 1}. ${question.question}`;
+          const wrappedQuestion = wrapText(questionText, maxLineWidth);
+
+          doc.setFontSize(12);
+          wrappedQuestion.forEach((line) => {
+            doc.text(line, margin, yPosition);
+            yPosition += 6;
+            if (yPosition + 6 > pageHeight - margin) {
+              yPosition = addNewPage();
+            }
+          });
+
+          const answer = mcqAnswers[question.id] || "No answer";
+          doc.text(`Answer: ${answer}`, margin, yPosition);
+          yPosition += 12;
+          if (yPosition + 12 > pageHeight - margin) {
+            yPosition = addNewPage();
+          }
+        });
       }
 
       // Practical Section
+      let index = 0;
       if (examination.practical) {
-        yPosition = margin;
-        const practicalSectionTitle = "Practical Section";
-        doc.setFontSize(16);
-        const practicalTitleWidth =
-          doc.getStringUnitWidth(practicalSectionTitle) *
-          doc.internal.scaleFactor;
-        doc.text(
-          practicalSectionTitle,
-          (doc.internal.pageSize.width - practicalTitleWidth) / 2,
-          yPosition
-        ); // Center the title
-        yPosition += 10;
+        yPosition = addNewPage();
+        yPosition = addSectionTitle("Practical Section", yPosition);
 
-        let index = 0;
         for (const question of examination.practical_question
           .question_details) {
-          index++;
-          const answer = practicalAnswers[question.id];
-
-          console.log(question, answer);
+          const maxLineWidth = pageWidth - 2 * margin;
+          const questionText = `${++index}. ${question.question}`;
+          const wrappedQuestion = wrapText(questionText, maxLineWidth);
 
           doc.setFontSize(12);
-          doc.text(`${index + 1}. ${question.question}`, 10, yPosition);
-          yPosition += 6;
-          addPageIfNeeded(); // Check if we need to add a new page before placing content
+          wrappedQuestion.forEach((line) => {
+            doc.text(line, margin, yPosition);
+            yPosition += 6;
+            if (yPosition + 6 > pageHeight - margin) {
+              yPosition = addNewPage();
+            }
+          });
 
-          if (answer) {
-            if (answer instanceof File) {
-              const base64Image = await fileToBase64(answer);
-              if (base64Image) {
-                const image = new Image();
-                image.src = `data:image/jpeg;base64,${base64Image}`;
+          const answer = practicalAnswers[question.id];
+          if (answer instanceof File) {
+            const base64Image = await fileToBase64(answer);
+            if (base64Image) {
+              const image = new Image();
+              image.src = `data:image/jpeg;base64,${base64Image}`;
 
-                // Wait for the image to load
-                await new Promise((resolve, reject) => {
-                  image.onload = resolve;
-                  image.onerror = reject;
-                });
+              await new Promise((resolve, reject) => {
+                image.onload = resolve;
+                image.onerror = reject;
+              });
 
-                // Calculate the image size based on available space
-                const { scaledWidth, scaledHeight } = calculateImageSize(
-                  image,
-                  yPosition
-                );
+              const imgWidth = pageWidth - 2 * margin;
+              const imgHeight = (image.height / image.width) * imgWidth;
 
-                // Insert the image in the PDF
-                doc.addImage(
-                  image,
-                  "JPEG",
-                  10,
-                  yPosition,
-                  scaledWidth,
-                  scaledHeight
-                );
-                yPosition += scaledHeight + 6; // Adjust yPosition after image
-                addPageIfNeeded(); // Check again after adding the image
+              if (yPosition + imgHeight > pageHeight - margin) {
+                yPosition = addNewPage();
               }
-            } else {
-              doc.text("Answer: File Uploaded", 10, yPosition); // For non-image files
-              yPosition += 12;
-              addPageIfNeeded(); // Check again if needed
+
+              doc.addImage(
+                image,
+                "JPEG",
+                margin,
+                yPosition,
+                imgWidth,
+                imgHeight
+              );
+              yPosition += imgHeight + 6;
             }
           } else {
-            doc.text("Answer: No answer", 10, yPosition);
+            const textAnswer = answer
+              ? "Answer: File Uploaded"
+              : "Answer: No answer";
+            doc.text(textAnswer, margin, yPosition);
             yPosition += 12;
-            addPageIfNeeded();
+            if (yPosition + 12 > pageHeight - margin) {
+              yPosition = addNewPage();
+            }
           }
         }
       }
@@ -339,7 +356,6 @@ const Action = () => {
     }
   };
 
-  // Helper function to convert File to Base64
   const fileToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();

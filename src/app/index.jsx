@@ -30,7 +30,7 @@ const Home = () => {
         <ArrowBack />
       </IconButton>
       <div className="header-title">{window.env.VITE_SITE_NAME}</div>
-      <div className="header-subtitle">Smart Class</div>
+      <div className="header-subtitle">{window.env.VITE_SITE_SUB_TITLE}</div>
       <div className="icon-grid">
         {/* Link for Attendance Report */}
         <Link
@@ -69,7 +69,7 @@ const Home = () => {
           <div className="icon-text">Add Certificate</div>
         </Link>
       </div>
-      <div className="footer-text">Wisdom Computer Centre smart class</div>
+      <div className="footer-text">{window.env.VITE_SITE_FOOTER}</div>
     </div>
   );
 };
